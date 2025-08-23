@@ -10,6 +10,28 @@ if ( ! class_exists( 'Lusso_Resales_Admin' ) ) {
 
 	class Lusso_Resales_Admin {
 
+		/**
+		 * Instancia única (Singleton)
+		 * 
+		 * @var Lusso_Resales_Admin|null
+		 */
+		private static $instance = null;
+
+		/**
+		 * Obtener instancia única del singleton
+		 *
+		 * @return Lusso_Resales_Admin
+		 */
+		public static function instance() {
+			if ( self::$instance === null ) {
+				self::$instance = new self();
+			}
+			return self::$instance;
+		}
+
+		/**
+		 * Constructor público
+		 */
 		public function __construct() {
 			// Agrega la página de diagnóstico bajo "Ajustes"
 			add_action( 'admin_menu', array( $this, 'add_diag_submenu' ) );

@@ -2,13 +2,24 @@
 if (!defined('ABSPATH')) exit;
 
 class Lusso_Resales_Settings {
+    /**
+     * Instancia única (Singleton)
+     * @var Lusso_Resales_Settings|null
+     */
     private static $instance = null;
 
-    // NUEVO: método que reclama el bootstrap
+    /**
+     * Inicializa la instancia del singleton (usado en bootstrap)
+     * @return Lusso_Resales_Settings
+     */
     public static function init() {
         return self::instance();
     }
 
+    /**
+     * Devuelve la instancia del singleton
+     * @return Lusso_Resales_Settings
+     */
     public static function instance() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -16,7 +27,10 @@ class Lusso_Resales_Settings {
         return self::$instance;
     }
 
-    private function __construct() {
+    /**
+     * Constructor público (antes era privado)
+     */
+    public function __construct() {
         // Hooks de settings/menús, etc.
         add_action('admin_menu', [$this, 'add_settings_page']);
         add_action('admin_init', [$this, 'register_settings']);
