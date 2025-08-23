@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: Lusso Resales API
+ * Plugin Name: Resales API
  * Description: Integración con Resales Online WebAPI V6 (shortcodes, ajustes y cliente HTTP).
  * Version: 3.1.0
- * Author: Lusso Dev Team
+ * Author: Dev Team
  * Requires at least: 6.0
  * Requires PHP: 7.4
- * Text Domain: lusso-resales
  */
+
 
 if (!defined('ABSPATH')) {
     exit;
