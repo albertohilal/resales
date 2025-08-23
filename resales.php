@@ -70,20 +70,20 @@ add_action('plugins_loaded', function () {
         }
 
         // 2) Inicializar componentes solo si existen las clases
-        if (class_exists('Lusso_Resales_Settings')) {
-            Lusso_Resales_Settings::instance();
+        if (class_exists('Resales_Settings')) {
+            Resales_Settings::instance();
         } else {
-            throw new RuntimeException('Clase Lusso_Resales_Settings no disponible (¿nombre de clase/archivo distinto?).');
+            throw new RuntimeException('Clase Resales_Settings no disponible (¿nombre de clase/archivo distinto?).');
         }
 
-        if (class_exists('Lusso_Resales_Shortcodes')) {
-            Lusso_Resales_Shortcodes::instance();
+        if (class_exists('Resales_Shortcodes')) {
+            Resales_Shortcodes::instance();
         } else {
-            throw new RuntimeException('Clase Lusso_Resales_Shortcodes no disponible.');
+            throw new RuntimeException('Clase Resales_Shortcodes no disponible.');
         }
 
-        if (is_admin() && class_exists('Lusso_Resales_Admin')) {
-            Lusso_Resales_Admin::instance();
+        if (is_admin() && class_exists('Resales_Admin')) {
+            Resales_Admin::instance();
         }
 
     } catch (Throwable $e) {
