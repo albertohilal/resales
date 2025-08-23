@@ -95,6 +95,11 @@ class Resales_Client {
 		$params['p1'] = sanitize_text_field( $p1 );
 		$params['p2'] = sanitize_text_field( $p2 );
 		$url = $this->build_url( $params );
+		// Log explícito para soporte: URL y parámetros
+		if (defined('WP_DEBUG') && WP_DEBUG) {
+			error_log('[RESALES API] URL generada: ' . $url);
+			error_log('[RESALES API] Parámetros: ' . print_r($params, true));
+		}
 		$cache_key = 'resales_api_' . md5( $url );
 		$cached    = get_transient( $cache_key );
 		if ( false !== $cached ) {
