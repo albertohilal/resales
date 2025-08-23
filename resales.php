@@ -8,7 +8,6 @@
  * Requires PHP: 7.4
  */
 
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -18,7 +17,7 @@ if (!defined('ABSPATH')) {
  *  ─────────────────────── */
 if (version_compare(PHP_VERSION, '7.4', '<')) {
     add_action('admin_notices', function () {
-        echo '<div class="notice notice-error"><p><strong>Lusso Resales</strong>: requiere PHP 7.4 o superior.</p></div>';
+    echo '<div class="notice notice-error"><p><strong>Resales API</strong>: requiere PHP 7.4 o superior.</p></div>';
     });
     return;
 }
@@ -30,22 +29,22 @@ if (defined('WP_INSTALLING') && WP_INSTALLING) {
 /** ───────────────────────
  *  Constantes de ruta/URL
  *  ─────────────────────── */
-define('LUSSO_RESALES_PATH', plugin_dir_path(__FILE__));
-define('LUSSO_RESALES_URL', plugin_dir_url(__FILE__));
-define('LUSSO_RESALES_VERSION', '3.1.0');
+define('RESALES_API_PATH', plugin_dir_path(__FILE__));
+define('RESALES_API_URL', plugin_dir_url(__FILE__));
+define('RESALES_API_VERSION', '3.1.0');
 
 /** ───────────────────────
  *  Helper: require seguro
  *  ─────────────────────── */
-if (!function_exists('lusso_resales_safe_require')) {
-    function lusso_resales_safe_require(string $relative): bool {
-        $path = LUSSO_RESALES_PATH . ltrim($relative, '/');
+if (!function_exists('resales_api_safe_require')) {
+    function resales_api_safe_require(string $relative): bool {
+        $path = RESALES_API_PATH . ltrim($relative, '/');
         if (is_readable($path)) {
             require_once $path;
             return true;
         }
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[LUSSO] No se pudo cargar: ' . $path);
+            error_log('[RESALES] No se pudo cargar: ' . $path);
         }
         return false;
     }
@@ -57,12 +56,12 @@ if (!function_exists('lusso_resales_safe_require')) {
 add_action('plugins_loaded', function () {
     try {
         // 1) Cargar dependencias (ajusta los nombres si tus archivos difieren)
-        $ok  = lusso_resales_safe_require('includes/class-lusso-resales-client.php');
-        $ok &= lusso_resales_safe_require('includes/class-lusso-resales-settings.php');
-        $ok &= lusso_resales_safe_require('includes/class-lusso-resales-shortcodes.php');
+        $ok  = resales_api_safe_require('includes/class-resales-client.php');
+        $ok &= resales_api_safe_require('includes/class-resales-settings.php');
+        $ok &= resales_api_safe_require('includes/class-resales-shortcodes.php');
         // Admin es opcional si no estás en admin
         if (is_admin()) {
-            lusso_resales_safe_require('includes/class-lusso-resales-admin.php');
+            resales_api_safe_require('includes/class-resales-admin.php');
         }
 
         // Si algún include falló, registra y aborta sin fatal.
@@ -71,29 +70,29 @@ add_action('plugins_loaded', function () {
         }
 
         // 2) Inicializar componentes solo si existen las clases
-        if (class_exists('Lusso_Resales_Settings')) {
-            Lusso_Resales_Settings::init();
+        if (class_exists('Resales_Settings')) {
+            Resales_Settings::instance();
         } else {
-            throw new RuntimeException('Clase Lusso_Resales_Settings no disponible (¿nombre de clase/archivo distinto?).');
+            throw new RuntimeException('Clase Resales_Settings no disponible (¿nombre de clase/archivo distinto?).');
         }
 
-        if (class_exists('Lusso_Resales_Shortcodes')) {
-            Lusso_Resales_Shortcodes::init();
+        if (class_exists('Resales_Shortcodes')) {
+            Resales_Shortcodes::instance();
         } else {
-            throw new RuntimeException('Clase Lusso_Resales_Shortcodes no disponible.');
+            throw new RuntimeException('Clase Resales_Shortcodes no disponible.');
         }
 
-        if (is_admin() && class_exists('Lusso_Resales_Admin')) {
-            Lusso_Resales_Admin::init();
+        if (is_admin() && class_exists('Resales_Admin')) {
+            Resales_Admin::instance();
         }
 
     } catch (Throwable $e) {
         // No tumbes el sitio, deja diagnóstico claro:
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[LUSSO BOOT ERROR] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+            error_log('[RESALES BOOT ERROR] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
         }
         add_action('admin_notices', function () use ($e) {
-            echo '<div class="notice notice-error"><p><strong>Lusso Resales</strong>: error al iniciar. '
+            echo '<div class="notice notice-error"><p><strong>Resales API</strong>: error al iniciar. '
                . 'Revisa <code>wp-content/debug.log</code>.<br>'
                . esc_html($e->getMessage()) . '</p></div>';
         });
@@ -105,7 +104,7 @@ add_action('plugins_loaded', function () {
  *  ─────────────────────── */
 register_activation_hook(__FILE__, function () {
     if (version_compare(PHP_VERSION, '7.4', '<')) {
-        wp_die('Lusso Resales requiere PHP 7.4 o superior.');
+        wp_die('Resales API requiere PHP 7.4 o superior.');
     }
     // No hagas llamadas HTTP aquí.
 });

@@ -1,7 +1,7 @@
-# Lusso Resales API
+# Resales API
 
 ## Instalación y activación
-1. Copia la carpeta `lusso-resales` en `wp-content/plugins/`.
+1. Copia la carpeta `resales` en `wp-content/plugins/`.
 2. Activa el plugin desde el panel de WordPress.
 
 ## Configuración de credenciales
@@ -15,12 +15,17 @@
 
 ## Ejemplos de shortcode
 ```
-[lusso_developments filter_agency_id="4" per_page="6"]
-[lusso_developments filter_agency_id="1" per_page="12"]
-[lusso_developments filter_agency_id="2"]
-[lusso_developments filter_agency_id="3"]
+[resales_developments agency_id="4" per_page="6"]
+[resales_developments agency_id="1" per_page="12"]
+[resales_developments agency_id="2"]
+[resales_developments agency_id="3"]
 ```
 
 ## Notas de seguridad
 - La API Key (P2) nunca se expone en el frontend, solo se usa server-side.
 - Evita cachés agresivas en la página del shortcode para asegurar datos frescos y evitar errores de autenticación.
+
+## Soporte y contribuciones
+Para reportar bugs o sugerir mejoras, abre un issue en este repositorio.
+
+---
