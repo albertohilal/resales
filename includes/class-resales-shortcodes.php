@@ -96,8 +96,19 @@ class Resales_Shortcodes {
         $html = '<div class="resales-developments-list" style="display:flex;flex-wrap:wrap;gap:24px;">';
 
         foreach ($developments as $dev) {
-            // Ajusta estos campos según tu API
-            $name     = isset($dev['name']) ? esc_html($dev['name']) : 'Sin nombre';
+            // Buscar el campo de nombre correcto
+            $name = '';
+            if (isset($dev['name']) && $dev['name']) {
+                $name = esc_html($dev['name']);
+            } elseif (isset($dev['title']) && $dev['title']) {
+                $name = esc_html($dev['title']);
+            } elseif (isset($dev['development_name']) && $dev['development_name']) {
+                $name = esc_html($dev['development_name']);
+            } elseif (isset($dev['property_name']) && $dev['property_name']) {
+                $name = esc_html($dev['property_name']);
+            } else {
+                $name = 'Sin nombre';
+            }
             $location = isset($dev['location']) ? esc_html($dev['location']) : '';
             $image    = isset($dev['image']) ? esc_url($dev['image']) : '';
             $url      = isset($dev['url']) ? esc_url($dev['url']) : '#';
@@ -123,7 +134,22 @@ class Resales_Shortcodes {
      * Renderiza el formulario de búsqueda (ejemplo mínimo).
      */
     public function render_search_form( $atts = array(), $content = null ) : string {
-        return '<form class="resales-search-form"><input type="text" name="q" placeholder="Buscar..."><button type="submit">Buscar</button></form>';
+    $html = '<form class="resales-search-form" method="get" action="">';
+    $html .= '<input type="text" name="q" placeholder="Buscar por palabra clave..." value="'.esc_attr($_GET['q'] ?? '').'" /> ';
+    $html .= '<select name="type"><option value="">Tipo</option><option value="apartment"'.(($_GET['type'] ?? '')=='apartment'?' selected':'').'>Apartamento</option><option value="villa"'.(($_GET['type'] ?? '')=='villa'?' selected':'').'>Villa</option></select> ';
+    $html .= '<input type="number" name="minprice" placeholder="Precio mínimo" min="0" value="'.esc_attr($_GET['minprice'] ?? '').'" /> ';
+    $html .= '<input type="number" name="maxprice" placeholder="Precio máximo" min="0" value="'.esc_attr($_GET['maxprice'] ?? '').'" /> ';
+    $html .= '<button type="submit">Buscar</button>';
+    $html .= '</form>';
+
+    // Mostrar todas las propiedades si no hay filtros
+    $filters = array();
+    if (!empty($_GET['q'])) $filters['q'] = sanitize_text_field($_GET['q']);
+    if (!empty($_GET['type'])) $filters['type'] = sanitize_text_field($_GET['type']);
+    if (!empty($_GET['minprice'])) $filters['minprice'] = intval($_GET['minprice']);
+    if (!empty($_GET['maxprice'])) $filters['maxprice'] = intval($_GET['maxprice']);
+    $html .= $this->render_developments($filters);
+    return $html;
     }
 
 }

@@ -17,7 +17,7 @@ class Resales_Client {
 	 * Endpoint base (sin la parte del recurso final).
 	 * @var string
 	 */
-	private $base = 'https://webapi.resales-online.com/V6/Search';
+	private $base = 'https://webapi.resales-online.com/V6/SearchProperties';
 
 	/**
 	 * User-Agent para las peticiones (configurable).
@@ -47,24 +47,27 @@ class Resales_Client {
 	 * Parámetros permitidos por la API (en minúsculas).
 	 * @var string[]
 	 */
-	private $allowed = array(
-		'p1', 'p2',
-		'lang', 'page', 'pagesize',
-		'agency_id', 'country', 'area', 'subarea',
-		'orderby', 'order', 'type', 'category', 'minprice', 'maxprice',
-		'beds', 'baths',
-		'features', 'location', 'q'
-	);
+	   private $allowed = array(
+		   'p1', 'p2',
+		   'p_lang', 'page', 'pagesize',
+		   'country', 'area', 'subarea',
+		   'orderby', 'order', 'type', 'minprice', 'maxprice',
+		   'beds', 'baths',
+		   'features', 'location', 'q',
+		   'P_agency_filterid',
+		   'searchFeatures', // Nueva promoción
+	   );
 
 	/**
 	 * Valores por defecto comunes.
 	 * @var array
 	 */
-	private $defaults = array(
-		'lang'     => 'es',
-		'page'     => 1,
-		'pagesize' => 6,
-	);
+	   private $defaults = array(
+		   'p_lang'   => 1, // 1 = Español, según documentación
+		   'page'     => 1,
+		   'pagesize' => 6,
+		   'searchFeatures' => 'New Development', // Valor para Nueva promoción
+	   );
 
 	public function __construct() {
 		// Permitir configuración desde opciones
@@ -81,13 +84,13 @@ class Resales_Client {
 	public function search( array $args = array() ) : array {
 		$p1 = get_option( 'resales_api_p1' );
 		$p2 = get_option( 'resales_api_p2' );
-		$agency_id = get_option( 'resales_api_agency_id' );
-		if ( empty( $p1 ) || empty( $p2 ) || empty( $agency_id ) ) {
+		$p_agency_filterid = get_option( 'resales_api_agency_filterid' );
+		if ( empty( $p1 ) || empty( $p2 ) || empty( $p_agency_filterid ) ) {
 			return array(
 				'ok'   => false,
 				'code' => 0,
 				'data' => null,
-				'error'=> __( 'Faltan credenciales P1/P2/agency_id en Ajustes → Resales API.', 'resales-api' ),
+				'error'=> __( 'Faltan credenciales P1/P2/P_agency_filterid en Ajustes → Resales API.', 'resales-api' ),
 				'raw'  => null,
 				'url'  => '',
 			);
@@ -95,7 +98,15 @@ class Resales_Client {
 		$params = $this->normalize_args( $args );
 		$params['p1'] = sanitize_text_field( $p1 );
 		$params['p2'] = sanitize_text_field( $p2 );
-		$params['agency_id'] = sanitize_text_field( $agency_id );
+		$params['P_agency_filterid'] = sanitize_text_field( $p_agency_filterid );
+		// Forzar p_lang a numérico si existe
+		if (isset($params['p_lang'])) {
+			$params['p_lang'] = intval($params['p_lang']);
+		}
+		// Eliminar agency_id si existe en los parámetros (por compatibilidad)
+		if (isset($params['agency_id'])) {
+			unset($params['agency_id']);
+		}
 		$url = $this->build_url( $params );
 		// Log explícito para soporte: URL y parámetros
 		if (defined('WP_DEBUG') && WP_DEBUG) {
