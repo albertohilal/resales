@@ -81,12 +81,13 @@ class Resales_Client {
 	public function search( array $args = array() ) : array {
 		$p1 = get_option( 'resales_api_p1' );
 		$p2 = get_option( 'resales_api_p2' );
-		if ( empty( $p1 ) || empty( $p2 ) ) {
+		$agency_id = get_option( 'resales_api_agency_id' );
+		if ( empty( $p1 ) || empty( $p2 ) || empty( $agency_id ) ) {
 			return array(
 				'ok'   => false,
 				'code' => 0,
 				'data' => null,
-				'error'=> __( 'Faltan credenciales P1/P2 en Ajustes → Resales API.', 'resales-api' ),
+				'error'=> __( 'Faltan credenciales P1/P2/agency_id en Ajustes → Resales API.', 'resales-api' ),
 				'raw'  => null,
 				'url'  => '',
 			);
@@ -94,6 +95,7 @@ class Resales_Client {
 		$params = $this->normalize_args( $args );
 		$params['p1'] = sanitize_text_field( $p1 );
 		$params['p2'] = sanitize_text_field( $p2 );
+		$params['agency_id'] = sanitize_text_field( $agency_id );
 		$url = $this->build_url( $params );
 		// Log explícito para soporte: URL y parámetros
 		if (defined('WP_DEBUG') && WP_DEBUG) {

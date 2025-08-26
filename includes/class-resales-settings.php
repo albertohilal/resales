@@ -28,13 +28,14 @@ class Resales_Settings {
     }
 
     public function register_settings() {
-        register_setting('resales_api', 'resales_api_p1');
-        register_setting('resales_api', 'resales_api_p2');
-        register_setting('resales_api', 'resales_api_lang');
-        register_setting('resales_api', 'resales_api_pagesize');
-        register_setting('resales_api', 'resales_api_user_agent');
-        register_setting('resales_api', 'resales_api_timeout');
-        register_setting('resales_api', 'resales_api_cache_ttl');
+    register_setting('resales_api', 'resales_api_p1');
+    register_setting('resales_api', 'resales_api_p2');
+    register_setting('resales_api', 'resales_api_agency_id');
+    register_setting('resales_api', 'resales_api_lang');
+    register_setting('resales_api', 'resales_api_pagesize');
+    register_setting('resales_api', 'resales_api_user_agent');
+    register_setting('resales_api', 'resales_api_timeout');
+    register_setting('resales_api', 'resales_api_cache_ttl');
     }
 
     public function render_settings_page() {
@@ -52,6 +53,10 @@ class Resales_Settings {
                     <tr>
                         <th scope="row"><label for="resales_api_p2">P2</label></th>
                         <td><input type="text" id="resales_api_p2" name="resales_api_p2" value="<?php echo esc_attr(get_option('resales_api_p2', '')); ?>" class="regular-text"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="resales_api_agency_id">Agency ID</label></th>
+                        <td><input type="text" id="resales_api_agency_id" name="resales_api_agency_id" value="<?php echo esc_attr(get_option('resales_api_agency_id', '')); ?>" class="regular-text"></td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="resales_api_lang">Lang</label></th>
