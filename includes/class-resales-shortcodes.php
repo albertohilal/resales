@@ -1,157 +1,115 @@
 <?php
-/**
- * Shortcodes para el plugin Resales API
- *
- * Provee:
- *  - [lusso_developments ...]   → lista propiedades / developments
- *  - [resales_developments ...] → alias para compatibilidad
- *  - [resales_search_form]      → formulario simple de búsqueda (opcional)
- *
- * @package Resales_API
- */
+if (!defined('ABSPATH')) exit;
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
-
-if ( ! class_exists( 'Resales_Shortcodes' ) ) :
+if (!class_exists('Resales_Shortcodes')):
 
 class Resales_Shortcodes {
-
-    /**
-     * Instancia única (Singleton)
-     * @var Resales_Shortcodes|null
-     */
     private static $instance = null;
-
-    /**
-     * Inicializador estático.
-     */
-    public static function init() : Resales_Shortcodes {
-        return self::instance();
+    public static function instance(){ return self::$instance ?: (self::$instance = new self()); }
+    private function __construct(){
+        add_shortcode('lusso_developments', [$this,'sc_developments']);
+        add_shortcode('resales_developments', [$this,'sc_developments']); // alias
+        add_shortcode('resales_search_form', [$this,'sc_search_form']);
     }
 
-    /**
-     * Devuelve la instancia del singleton
-     */
-    public static function instance() : Resales_Shortcodes {
-        if ( self::$instance === null ) {
-            self::$instance = new self();
-            self::$instance->register();
-        }
-        return self::$instance;
-    }
+    /** [lusso_developments api_id="65503" new_devs="include" per_page="10" page="1"] */
+    public function sc_developments($atts = []){
+        $a = shortcode_atts([
+            'api_id'            => get_option('resales_api_apiid', ''),     // P_ApiId
+            'agency_filter_id'  => get_option('resales_api_agency_filterid',''), // alternativo
+            'new_devs'          => get_option('resales_api_newdevs','include'),
+            'per_page'          => 10,
+            'page'              => isset($_GET['page']) ? (int)$_GET['page'] : 1,
+            'query_id'          => isset($_GET['qid'])  ? sanitize_text_field($_GET['qid']) : '',
+            // filtros simples vía GET opcional:
+            'min'               => isset($_GET['min']) ? (int)$_GET['min'] : '',
+            'max'               => isset($_GET['max']) ? (int)$_GET['max'] : '',
+            'beds'              => isset($_GET['beds'])? sanitize_text_field($_GET['beds']) : '',
+            'baths'             => isset($_GET['baths'])? sanitize_text_field($_GET['baths']) : '',
+            'location'          => isset($_GET['loc']) ? sanitize_text_field($_GET['loc']) : '',
+        ], $atts, 'lusso_developments');
 
-    /**
-     * Constructor público
-     */
-    public function __construct() {
-        // Inicializaciones globales si necesitas
-    }
+        $client = Resales_Client::instance();
 
-    /**
-     * Registro de shortcodes.
-     */
-    public function register() : void {
-        add_shortcode( 'lusso_developments',       array( $this, 'render_developments' ) );
-        add_shortcode( 'resales_developments',     array( $this, 'render_developments' ) );
-        add_shortcode( 'resales_search_form',      array( $this, 'render_search_form' ) );
-    }
+        $args = [
+            'p_PageSize' => (int)$a['per_page'],
+            'p_PageNo'   => (int)$a['page'],
+            'p_new_devs' => $a['new_devs'],
+        ];
+        if (!empty($a['api_id']))           $args['P_ApiId'] = (int)$a['api_id'];
+        elseif (!empty($a['agency_filter_id'])) $args['P_Agency_FilterId'] = (int)$a['agency_filter_id'];
 
-    /**
-     * Renderiza el listado de desarrollos al invocar el shortcode.
-     * Consulta la API y muestra los resultados.
-     */
-    public function render_developments( $atts = array(), $content = null ) : string {
-        // Instanciar el cliente de la API
-        if (class_exists('Resales_Client')) {
-            $client = new Resales_Client();
-        } else {
-            return '<div class="resales-developments">No se encuentra el cliente de la API.</div>';
-        }
+        if ($a['min']!=='')   $args['P_Min'] = (int)$a['min'];
+        if ($a['max']!=='')   $args['P_Max'] = (int)$a['max'];
+        if ($a['beds']!=='')  $args['P_Beds'] = $a['beds'];
+        if ($a['baths']!=='') $args['P_Baths'] = $a['baths'];
+        if ($a['location']!=='') $args['P_Location'] = $a['location'];
 
-        // Puedes pasar filtros desde $atts si quieres (ejemplo: ['type' => 'promotion'])
-        $result = $client->search();
+        if (!empty($a['query_id'])) $args['P_QueryId'] = $a['query_id'];
 
-        // Verifica el resultado
-        if ( empty($result['ok']) || empty($result['data']) ) {
-            return '<div class="resales-developments">No hay desarrollos disponibles o hubo un error en la API.</div>';
+        $res = $client->search($args);
+
+        if (!$res['ok']) {
+            return '<div class="resales-error">Error al consultar la API: '.esc_html($res['error']).'</div>';
         }
 
-        $developments = $result['data'];
+        $data = $res['data'];
+        $qi   = $data['QueryInfo'] ?? [];
+        $items= $data['Property'] ?? [];
 
-        // Para depuración: ver estructura en el log de WP
-        error_log(print_r($developments, true));
-
-        // Si la API devuelve un array con la clave 'results', úsala (adáptalo según tu API)
-        if (isset($developments['results']) && is_array($developments['results'])) {
-            $developments = $developments['results'];
+        ob_start();
+        echo '<div class="resales-grid">';
+        foreach ($items as $p){
+            $title = $client->build_title($p);
+            $img   = $p['MainImage'] ?? '';
+            $isDev = !empty($p['NewDevelopment']); // si el feed lo marca
+            ?>
+            <article class="resales-card" style="border:1px solid #eee;padding:12px;margin:10px;max-width:340px;">
+                <?php if ($img): ?>
+                    <img loading="lazy" src="<?php echo esc_url($img); ?>" alt="<?php echo esc_attr($title); ?>" style="width:100%;height:auto;">
+                <?php endif; ?>
+                <h3 style="margin:.6em 0;"><?php echo esc_html($title ?: 'Propiedad'); ?></h3>
+                <?php if ($isDev): ?><span style="display:inline-block;background:#eee;border-radius:4px;padding:2px 6px;font-size:.85em;">Nueva promoción</span><?php endif; ?>
+                <p style="font-size:.9em;color:#555;"><?php echo esc_html(wp_strip_all_tags($p['Description'] ?? '')); ?></p>
+                <p style="font-weight:600;"><?php echo esc_html(($p['Currency'] ?? '').' '.number_format((float)($p['Price'] ?? 0),0,',','.')); ?></p>
+            </article>
+            <?php
         }
+        echo '</div>';
 
-        if (empty($developments) || !is_array($developments)) {
-            return '<div class="resales-developments">No se encontraron desarrollos.</div>';
-        }
-
-        // Renderizado básico, adapta los campos según la estructura real de tu API
-        $html = '<div class="resales-developments-list" style="display:flex;flex-wrap:wrap;gap:24px;">';
-
-        foreach ($developments as $dev) {
-            // Buscar el campo de nombre correcto
-            $name = '';
-            if (isset($dev['name']) && $dev['name']) {
-                $name = esc_html($dev['name']);
-            } elseif (isset($dev['title']) && $dev['title']) {
-                $name = esc_html($dev['title']);
-            } elseif (isset($dev['development_name']) && $dev['development_name']) {
-                $name = esc_html($dev['development_name']);
-            } elseif (isset($dev['property_name']) && $dev['property_name']) {
-                $name = esc_html($dev['property_name']);
-            } else {
-                $name = 'Sin nombre';
+        // Paginación simple: añade qid a los enlaces (recomendación V6) :contentReference[oaicite:11]{index=11}
+        if (!empty($qi)){
+            $qid   = urlencode($qi['QueryId'] ?? ($a['query_id'] ?? ''));
+            $page  = (int)$a['page'];
+            $per   = (int)$a['per_page'];
+            $base  = remove_query_arg(['page','qid']);
+            echo '<nav class="resales-pager" style="margin:10px 0;">';
+            if ($page > 1){
+                $prev = add_query_arg(['page'=>$page-1,'qid'=>$qid], $base);
+                echo '<a href="'.esc_url($prev).'">« Anterior</a> ';
             }
-            $location = isset($dev['location']) ? esc_html($dev['location']) : '';
-            $image    = isset($dev['image']) ? esc_url($dev['image']) : '';
-            $url      = isset($dev['url']) ? esc_url($dev['url']) : '#';
-
-            $html .= '<div class="development" style="width:300px;border:1px solid #ccc;padding:16px;">';
-
-            if ($image) {
-                $html .= '<a href="'.$url.'" target="_blank"><img src="'.$image.'" alt="'.$name.'" style="width:100%;height:auto;"></a>';
-            }
-
-            $html .= '<h3><a href="'.$url.'" target="_blank">'.$name.'</a></h3>';
-            $html .= '<p>'.$location.'</p>';
-            $html .= '<a href="'.$url.'" target="_blank" style="display:inline-block;margin-top:8px;">Ver más</a>';
-            $html .= '</div>';
+            $next = add_query_arg(['page'=>$page+1,'qid'=>$qid], $base);
+            echo '<a href="'.esc_url($next).'">Siguiente »</a>';
+            echo '</nav>';
         }
 
-        $html .= '</div>';
-
-        return $html;
+        return ob_get_clean();
     }
 
-    /**
-     * Renderiza el formulario de búsqueda (ejemplo mínimo).
-     */
-    public function render_search_form( $atts = array(), $content = null ) : string {
-    $html = '<form class="resales-search-form" method="get" action="">';
-    $html .= '<input type="text" name="q" placeholder="Buscar por palabra clave..." value="'.esc_attr($_GET['q'] ?? '').'" /> ';
-    $html .= '<select name="type"><option value="">Tipo</option><option value="apartment"'.(($_GET['type'] ?? '')=='apartment'?' selected':'').'>Apartamento</option><option value="villa"'.(($_GET['type'] ?? '')=='villa'?' selected':'').'>Villa</option></select> ';
-    $html .= '<input type="number" name="minprice" placeholder="Precio mínimo" min="0" value="'.esc_attr($_GET['minprice'] ?? '').'" /> ';
-    $html .= '<input type="number" name="maxprice" placeholder="Precio máximo" min="0" value="'.esc_attr($_GET['maxprice'] ?? '').'" /> ';
-    $html .= '<button type="submit">Buscar</button>';
-    $html .= '</form>';
-
-    // Mostrar todas las propiedades si no hay filtros
-    $filters = array();
-    if (!empty($_GET['q'])) $filters['q'] = sanitize_text_field($_GET['q']);
-    if (!empty($_GET['type'])) $filters['type'] = sanitize_text_field($_GET['type']);
-    if (!empty($_GET['minprice'])) $filters['minprice'] = intval($_GET['minprice']);
-    if (!empty($_GET['maxprice'])) $filters['maxprice'] = intval($_GET['maxprice']);
-    $html .= $this->render_developments($filters);
-    return $html;
+    /** Formulario mínimo para demos */
+    public function sc_search_form($atts = []){
+        ob_start(); ?>
+        <form method="get" class="resales-form" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0;">
+            <input name="loc"  placeholder="Ubicación" value="<?php echo esc_attr($_GET['loc'] ?? ''); ?>">
+            <input name="beds" placeholder="Dorm." value="<?php echo esc_attr($_GET['beds'] ?? ''); ?>">
+            <input name="baths" placeholder="Baños" value="<?php echo esc_attr($_GET['baths'] ?? ''); ?>">
+            <input name="min"  placeholder="Precio mín." value="<?php echo esc_attr($_GET['min'] ?? ''); ?>">
+            <input name="max"  placeholder="Precio máx." value="<?php echo esc_attr($_GET['max'] ?? ''); ?>">
+            <button type="submit">Buscar</button>
+        </form>
+        <?php
+        return ob_get_clean();
     }
-
 }
 
 endif;

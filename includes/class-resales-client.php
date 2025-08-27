@@ -1,238 +1,116 @@
 <?php
 /**
- * Cliente para Resales Online WebAPI v6 (solo GET)
- *
- * @package Resales_API
+ * Cliente para Resales Online WebAPI V6 (GET)
  */
+if (!defined('ABSPATH')) exit;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
-if ( ! class_exists( 'Resales_Client' ) ) :
+if (!class_exists('Resales_Client')):
 
 class Resales_Client {
+    private static $instance = null;
+    private $base = 'https://webapi.resales-online.com/V6/SearchProperties'; // función V6 correcta :contentReference[oaicite:3]{index=3}
 
-	/**
-	 * Endpoint base (sin la parte del recurso final).
-	 * @var string
-	 */
-	private $base = 'https://webapi.resales-online.com/V6/SearchProperties';
+    public static function instance(){
+        return self::$instance ?: (self::$instance = new self());
+    }
 
-	/**
-	 * User-Agent para las peticiones (configurable).
-	 * @var string
-	 */
-	private $ua;
+    private function __construct(){}
 
-	/**
-	 * Tiempo de caché (segundos, configurable).
-	 * @var int
-	 */
-	private $cache_ttl;
+    private function opt($key, $default = ''){
+        $v = get_option($key, $default);
+        if (is_string($v)) $v = trim($v);
+        return $v;
+    }
 
-	/**
-	 * Timeout para peticiones (configurable).
-	 * @var int
-	 */
-	private $timeout;
+    /** Construye URL con parámetros válidos V6 */
+    private function build_url(array $args) : string {
+        $params = [
+            // credenciales obligatorias :contentReference[oaicite:4]{index=4}
+            'p1'       => $this->opt('resales_api_p1'),
+            'p2'       => $this->opt('resales_api_p2'),
+            // salida / idioma
+            'p_output' => 'JSON',
+            'P_Lang'   => (int)$this->opt('resales_api_lang', 2), // 2 = ES :contentReference[oaicite:5]{index=5}
+        ];
 
-	/**
-	 * Reintentos en caso de error temporal.
-	 * @var int
-	 */
-	private $max_retries = 2;
+        // Filtro: usar SOLO UNO (ApiId o Agency_FilterId) :contentReference[oaicite:6]{index=6}
+        $apiId   = $args['P_ApiId']          ?? $this->opt('resales_api_apiid');
+        $afAlias = $args['P_Agency_FilterId']?? $this->opt('resales_api_agency_filterid');
 
-	/**
-	 * Parámetros permitidos por la API (en minúsculas).
-	 * @var string[]
-	 */
-	   private $allowed = array(
-		   'p1', 'p2',
-		   'p_lang', 'page', 'pagesize',
-		   'country', 'area', 'subarea',
-		   'orderby', 'order', 'type', 'minprice', 'maxprice',
-		   'beds', 'baths',
-		   'features', 'location', 'q',
-		   'P_agency_filterid',
-		   'searchFeatures', // Nueva promoción
-	   );
+        if (!empty($apiId)) {
+            $params['P_ApiId'] = (int)$apiId;
+        } elseif (!empty($afAlias)) {
+            $params['P_Agency_FilterId'] = (int)$afAlias;
+        }
 
-	/**
-	 * Valores por defecto comunes.
-	 * @var array
-	 */
-	   private $defaults = array(
-		   'p_lang'   => 1, // 1 = Español, según documentación
-		   'page'     => 1,
-		   'pagesize' => 6,
-		   'searchFeatures' => 'New Development', // Valor para Nueva promoción
-	   );
+        // Nueva promoción (New Developments) exclude|include|only (include por defecto) :contentReference[oaicite:7]{index=7}
+        $newDevs = $args['p_new_devs'] ?? $this->opt('resales_api_newdevs', 'include');
+        if (in_array($newDevs, ['exclude','include','only'], true)) {
+            $params['p_new_devs'] = $newDevs;
+        }
 
-	public function __construct() {
-		// Permitir configuración desde opciones
-		$this->ua        = get_option('resales_api_user_agent', 'ResalesAPIPlugin/1.0');
-		$this->cache_ttl = absint(get_option('resales_api_cache_ttl', 60));
-		$this->timeout   = absint(get_option('resales_api_timeout', 20));
-	}
+        // Paginación V6: PageSize / PageNo / QueryId :contentReference[oaicite:8]{index=8}
+        if (isset($args['p_PageSize'])) $params['p_PageSize'] = min(40, max(1, (int)$args['p_PageSize']));
+        if (isset($args['p_PageNo']))   $params['p_PageNo']   = max(1, (int)$args['p_PageNo']);
+        if (!empty($args['P_QueryId'])) $params['P_QueryId']  = sanitize_text_field($args['P_QueryId']);
 
-	/**
-	 * Entrada principal: busca propiedades.
-	 * @param array $args
-	 * @return array
-	 */
-	public function search( array $args = array() ) : array {
-		$p1 = get_option( 'resales_api_p1' );
-		$p2 = get_option( 'resales_api_p2' );
-		$p_agency_filterid = get_option( 'resales_api_agency_filterid' );
-		if ( empty( $p1 ) || empty( $p2 ) || empty( $p_agency_filterid ) ) {
-			return array(
-				'ok'   => false,
-				'code' => 0,
-				'data' => null,
-				'error'=> __( 'Faltan credenciales P1/P2/P_agency_filterid en Ajustes → Resales API.', 'resales-api' ),
-				'raw'  => null,
-				'url'  => '',
-			);
-		}
-		$params = $this->normalize_args( $args );
-		$params['p1'] = sanitize_text_field( $p1 );
-		$params['p2'] = sanitize_text_field( $p2 );
-		$params['P_agency_filterid'] = sanitize_text_field( $p_agency_filterid );
-		// Forzar p_lang a numérico si existe
-		if (isset($params['p_lang'])) {
-			$params['p_lang'] = intval($params['p_lang']);
-		}
-		// Eliminar agency_id si existe en los parámetros (por compatibilidad)
-		if (isset($params['agency_id'])) {
-			unset($params['agency_id']);
-		}
-		$url = $this->build_url( $params );
-		// Log explícito para soporte: URL y parámetros
-		if (defined('WP_DEBUG') && WP_DEBUG) {
-			error_log('[RESALES API] URL generada: ' . $url);
-			error_log('[RESALES API] Parámetros: ' . print_r($params, true));
-		}
-		$cache_key = 'resales_api_' . md5( $url );
-		$cached    = get_transient( $cache_key );
-		if ( false !== $cached ) {
-			return array(
-				'ok'   => true,
-				'code' => 200,
-				'data' => $cached,
-				'error'=> null,
-				'raw'  => null,
-				'url'  => $url,
-			);
-		}
-		$response = $this->do_request_with_retries($url);
-		if ( is_wp_error( $response ) ) {
-			$msg = $response->get_error_message();
-			$this->log_debug( "RESALES HTTP (WP_Error): {$msg} | URL: {$url}" );
-			return array(
-				'ok'   => false,
-				'code' => 0,
-				'data' => null,
-				'error'=> 'HTTP: ' . $msg,
-				'raw'  => null,
-				'url'  => $url,
-			);
-		}
-		$code = (int) wp_remote_retrieve_response_code( $response );
-		$body = wp_remote_retrieve_body( $response );
-		$headers = wp_remote_retrieve_headers( $response );
-		$this->log_debug( "RESALES HTTP {$code} | URL: {$url} | HEADERS: " . print_r($headers, true) . " | BODY: " . substr( (string) $body, 0, 2000 ) );
-		if ( 200 !== $code ) {
-			return array(
-				'ok'   => false,
-				'code' => $code,
-				'data' => null,
-				'error'=> 'HTTP: ' . $code,
-				'raw'  => $body,
-				'url'  => $url,
-			);
-		}
-		$data = json_decode( $body, true );
-		if ( JSON_ERROR_NONE !== json_last_error() ) {
-			$this->log_debug( "RESALES JSON inválido | URL: {$url} | BODY: " . substr( (string) $body, 0, 2000 ) );
-			return array(
-				'ok'   => false,
-				'code' => $code,
-				'data' => null,
-				'error'=> 'JSON inválido: ' . json_last_error_msg(),
-				'raw'  => $body,
-				'url'  => $url,
-			);
-		}
-		set_transient( $cache_key, $data, $this->cache_ttl );
-		return array(
-			'ok'   => true,
-			'code' => $code,
-			'data' => $data,
-			'error'=> null,
-			'raw'  => null,
-			'url'  => $url,
-		);
-	}
+        // Otros filtros que quieras pasar tal cual (ejemplos comunes)
+        foreach ([
+            'P_Beds','P_Baths','P_Min','P_Max','P_Location','P_PropertyTypes','P_SortType',
+            'p_images','p_show_dev_prices','P_onlydecree218','P_RTA'
+        ] as $k){
+            if (isset($args[$k])) $params[$k] = $args[$k];
+        }
 
-	private function do_request_with_retries($url) {
-		$attempts = 0;
-		while ($attempts <= $this->max_retries) {
-			$response = wp_remote_get(
-				$url,
-				array(
-					'timeout'    => $this->timeout,
-					'user-agent' => $this->ua,
-				)
-			);
-			if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) == 200) {
-				return $response;
-			}
-			$attempts++;
-		}
-		return $response;
-	}
+        // Diagnóstico cuando WP_DEBUG está activo
+        if (defined('WP_DEBUG') && WP_DEBUG) $params['p_sandbox'] = 'true'; // :contentReference[oaicite:9]{index=9}
 
-	private function normalize_args( array $args ) : array {
-		$lower = array();
-		foreach ( $args as $k => $v ) {
-			$lower[ strtolower( (string) $k ) ] = $v;
-		}
-		$merged = array_merge( $this->defaults, $lower );
-		$filtered = array();
-		foreach ( $merged as $k => $v ) {
-			if ( in_array( $k, $this->allowed, true ) ) {
-				$filtered[ $k ] = $v;
-			}
-		}
-		foreach ( $filtered as $k => $v ) {
-			if ( is_scalar( $v ) ) {
-				$filtered[ $k ] = sanitize_text_field( (string) $v );
-			} elseif ( is_array( $v ) ) {
-				$filtered[ $k ] = sanitize_text_field( implode( ',', array_map( 'sanitize_text_field', $v ) ) );
-			}
-		}
-		if ( isset( $filtered['page'] ) ) {
-			$filtered['page'] = max( 1, (int) $filtered['page'] );
-		}
-		if ( isset( $filtered['pagesize'] ) ) {
-			$filtered['pagesize'] = max( 1, (int) $filtered['pagesize'] );
-		}
-		return $filtered;
-	}
+        $url = esc_url_raw( add_query_arg($params, $this->base) );
+        $this->log('URL → ' . preg_replace('/(p2=)[^&]+/','\\1•••', $url)); // oculta p2
+        return $url;
+    }
 
-	private function build_url( array $params ) : string {
-		$base = $this->base;
-		$qs   = add_query_arg( $params, $base );
-		$url  = esc_url_raw( $qs );
-		$this->log_debug( 'RESALES URL API: ' . $url );
-		return $url;
-	}
+    /** Llamada HTTP */
+    private function http_get(string $url){
+        $timeout = (int) get_option('resales_api_timeout', 20);
+        $resp = wp_remote_get($url, ['timeout' => $timeout, 'headers' => ['Accept'=>'application/json']]);
+        if (is_wp_error($resp)) {
+            $this->log('HTTP ERROR: ' . $resp->get_error_message());
+            return ['ok'=>false,'code'=>0,'data'=>null,'error'=>$resp->get_error_message(),'raw'=>null,'url'=>$url];
+        }
+        $code = (int) wp_remote_retrieve_response_code($resp);
+        $body = (string) wp_remote_retrieve_body($resp);
+        $this->log("HTTP {$code} | BODY: " . substr($body,0,1500));
+        if ($code !== 200) {
+            return ['ok'=>false,'code'=>$code,'data'=>null,'error'=>'HTTP '.$code,'raw'=>$body,'url'=>$url];
+        }
+        $data = json_decode($body, true);
+        return ['ok'=>true,'code'=>$code,'data'=>$data,'error'=>null,'raw'=>$body,'url'=>$url];
+    }
 
-	private function log_debug( string $msg ) : void {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( $msg );
-		}
-	}
+    /** Búsqueda principal (paginada V6) */
+    public function search(array $args = []){
+        // Si piden página>1 sin QueryId, hacemos una llamada inicial para obtenerlo (recomendado por V6) :contentReference[oaicite:10]{index=10}
+        $page = isset($args['p_PageNo']) ? max(1,(int)$args['p_PageNo']) : 1;
+        if ($page > 1 && empty($args['P_QueryId'])) {
+            $first = $this->http_get( $this->build_url(array_diff_key($args, ['p_PageNo'=>1])) );
+            if (!$first['ok'] || empty($first['data']['QueryInfo']['QueryId'])) return $first;
+            $args['P_QueryId'] = $first['data']['QueryInfo']['QueryId'];
+        }
+        $url = $this->build_url($args);
+        return $this->http_get($url);
+    }
+
+    public function build_title(array $p): string {
+        $type = $p['PropertyType']['NameType'] ?? '';
+        $loc  = $p['Location'] ?? ($p['Area'] ?? ($p['Province'] ?? ''));
+        $ref  = $p['Reference'] ?? '';
+        if ($type && $loc) return sprintf('%s en %s', $type, $loc);
+        if ($ref && $loc)  return sprintf('Ref. %s — %s', $ref, $loc);
+        return $ref ?: 'Propiedad';
+    }
+
+    private function log($msg){ if (defined('WP_DEBUG') && WP_DEBUG) error_log('[Resales API] '.$msg); }
 }
+
 endif;
