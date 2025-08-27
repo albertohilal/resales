@@ -61,10 +61,13 @@ class Resales_Shortcodes {
     $items= $data['Property'] ?? [];
 
         ob_start();
-        // Filtros: barra superior
+        // Filtros: barra superior con accesibilidad
+        // Validar price_max
+        $a['price_max'] = (is_numeric($a['price_max']) && $a['price_max'] >= 0) ? $a['price_max'] : 0;
         ?>
-        <form method="get" class="lr-filters" style="margin-bottom:24px;">
-            <select name="loc">
+        <form method="get" class="lr-filters" style="margin-bottom:24px;" onsubmit="setTimeout(function(){document.getElementById('results-title').focus();}, 100);">
+            <label for="filter-loc">Ubicación</label>
+            <select id="filter-loc" name="loc">
                 <option value="">Elija una ubicación</option>
                 <option value="Benahavis"<?= $a['loc']==='Benahavis'?' selected':''; ?>>Benahavis</option>
                 <option value="Casares"<?= $a['loc']==='Casares'?' selected':''; ?>>Casares</option>
@@ -72,20 +75,24 @@ class Resales_Shortcodes {
                 <option value="Marbella"<?= $a['loc']==='Marbella'?' selected':''; ?>>Marbella</option>
                 <option value="Sotogrande"<?= $a['loc']==='Sotogrande'?' selected':''; ?>>Sotogrande</option>
             </select>
-            <select name="type">
+            <label for="filter-type">Tipo</label>
+            <select id="filter-type" name="type">
                 <option value="">Todos los tipos</option>
                 <option value="Villa"<?= $a['type']==='Villa'?' selected':''; ?>>Villa</option>
                 <option value="Apartment"<?= $a['type']==='Apartment'?' selected':''; ?>>Apartamento</option>
                 <option value="Townhouse"<?= $a['type']==='Townhouse'?' selected':''; ?>>Adosado</option>
                 <option value="Penthouse"<?= $a['type']==='Penthouse'?' selected':''; ?>>Ático</option>
             </select>
-            <input name="price_max" type="number" min="0" step="1000" placeholder="Precio hasta" value="<?= esc_attr($a['price_max']); ?>">
-            <select name="order">
+            <label for="filter-price-max">Precio máximo</label>
+            <input id="filter-price-max" name="price_max" type="number" min="0" step="1000" placeholder="Precio hasta" value="<?= esc_attr($a['price_max']); ?>">
+            <label for="filter-order">Orden</label>
+            <select id="filter-order" name="order">
                 <option value="recent"<?= $a['order']==='recent'?' selected':''; ?>>Más recientes</option>
                 <option value="price_asc"<?= $a['order']==='price_asc'?' selected':''; ?>>Precio ascendente</option>
                 <option value="price_desc"<?= $a['order']==='price_desc'?' selected':''; ?>>Precio descendente</option>
             </select>
-            <select name="per_page">
+            <label for="filter-per-page">Por página</label>
+            <select id="filter-per-page" name="per_page">
                 <option value="15"<?= $a['per_page']==15?' selected':''; ?>>15 props. por página</option>
                 <option value="30"<?= $a['per_page']==30?' selected':''; ?>>30 props. por página</option>
                 <option value="45"<?= $a['per_page']==45?' selected':''; ?>>45 props. por página</option>
@@ -94,6 +101,13 @@ class Resales_Shortcodes {
             <button type="reset" onclick="window.location.href=window.location.pathname;return false;">Reset</button>
         </form>
         <?php
+        // Región en vivo de resultados y encabezado con foco
+        $totalItems = isset($data['TotalItems']) ? (int)$data['TotalItems'] : count($items);
+        $page = (int)$a['page'];
+        $per = (int)$a['per_page'];
+        $totalPages = $per > 0 ? ceil($totalItems / $per) : 1;
+        echo '<div class="lr-results-status" role="status" aria-live="polite">'.esc_html($totalItems).' resultados – página '.esc_html($page).' de '.esc_html($totalPages).'</div>';
+        echo '<h2 id="results-title" tabindex="-1">Resultados</h2>';
                 echo '<div class="lr-grid">';
                 foreach ($items as $p){
                         $title = $client->build_title($p);
@@ -144,11 +158,11 @@ class Resales_Shortcodes {
             if ($page > 1){
                 $prev_args = array_merge($common_args, ['page'=>$page-1]);
                 $prev = add_query_arg($prev_args, $base);
-                echo '<a href="'.esc_url($prev).'" rel="prev">« Anterior</a> ';
+                echo '<a href="'.esc_url($prev).'" rel="prev" aria-label="Página '.($page-1).' de '.$totalPages.'">« Anterior</a> ';
             }
             $next_args = array_merge($common_args, ['page'=>$page+1]);
             $next = add_query_arg($next_args, $base);
-            echo '<a href="'.esc_url($next).'" rel="next">Siguiente »</a>';
+            echo '<a href="'.esc_url($next).'" rel="next" aria-label="Página '.($page+1).' de '.$totalPages.'">Siguiente »</a>';
             echo '</nav>';
         }
 
