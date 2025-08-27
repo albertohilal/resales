@@ -90,15 +90,40 @@ class Resales_Client {
 
     /** Búsqueda principal (paginada V6) */
     public function search(array $args = []){
-        // Si piden página>1 sin QueryId, hacemos una llamada inicial para obtenerlo (recomendado por V6) :contentReference[oaicite:10]{index=10}
+        // Si piden página>1 sin QueryId, hacemos una llamada inicial para obtenerlo (recomendado por V6)
+        // Doc V6: https://webapi-v6.learning.resales-online.com/#searchproperties
         $page = isset($args['p_PageNo']) ? max(1,(int)$args['p_PageNo']) : 1;
         if ($page > 1 && empty($args['P_QueryId'])) {
             $first = $this->http_get( $this->build_url(array_diff_key($args, ['p_PageNo'=>1])) );
             if (!$first['ok'] || empty($first['data']['QueryInfo']['QueryId'])) return $first;
             $args['P_QueryId'] = $first['data']['QueryInfo']['QueryId'];
         }
+
+        // Solicitar imágenes para developments (cards estilo Promociones)
+        // Doc V6: SearchProperties > p_images (cantidad), p_image_size (thumbnail/medium)
+        if (!isset($args['p_images'])) {
+            $args['p_images'] = 1; // Al menos 1 imagen por ítem
+        }
+        if (!isset($args['p_image_size'])) {
+            $args['p_image_size'] = 'medium'; // Tamaño adecuado para cards
+        }
+
         $url = $this->build_url($args);
-        return $this->http_get($url);
+        $result = $this->http_get($url);
+
+        // Normalizar respuesta: exponer first_image_url en cada elemento
+        if ($result['ok'] && !empty($result['data']['Properties']) && is_array($result['data']['Properties'])) {
+            foreach ($result['data']['Properties'] as $i => $item) {
+                // Doc V6: cada propiedad tiene 'Photos' (array), cada foto tiene 'Url'
+                $photos = $item['Photos'] ?? [];
+                if (is_array($photos) && count($photos) > 0 && !empty($photos[0]['Url'])) {
+                    $result['data']['Properties'][$i]['first_image_url'] = $photos[0]['Url'];
+                } else {
+                    $result['data']['Properties'][$i]['first_image_url'] = null;
+                }
+            }
+        }
+        return $result;
     }
 
     public function build_title(array $p): string {

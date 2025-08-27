@@ -1,0 +1,218 @@
+.
+├── assets
+│   └── css
+│       ├── lusso-resales.css
+│       └── resales.css
+├── docs
+│   └── troubleshooting.md
+├── .git
+│   ├── branches
+│   ├── COMMIT_EDITMSG
+│   ├── config
+│   ├── description
+│   ├── HEAD
+│   ├── hooks
+│   │   ├── applypatch-msg.sample
+│   │   ├── commit-msg.sample
+│   │   ├── fsmonitor-watchman.sample
+│   │   ├── post-update.sample
+│   │   ├── pre-applypatch.sample
+│   │   ├── pre-commit.sample
+│   │   ├── pre-merge-commit.sample
+│   │   ├── prepare-commit-msg.sample
+│   │   ├── pre-push.sample
+│   │   ├── pre-rebase.sample
+│   │   ├── pre-receive.sample
+│   │   ├── push-to-checkout.sample
+│   │   └── update.sample
+│   ├── index
+│   ├── info
+│   │   └── exclude
+│   ├── logs
+│   │   ├── HEAD
+│   │   └── refs
+│   │       ├── heads
+│   │       │   └── main
+│   │       └── remotes
+│   │           └── origin
+│   │               └── main
+│   ├── objects
+│   │   ├── 04
+│   │   │   └── 01d2a232b8ef08df9dfd303fcbe435b6d14416
+│   │   ├── 0b
+│   │   │   └── 0376409dea2a3b3b8c66f4d9284cc0ceee268c
+│   │   ├── 0c
+│   │   │   └── bcbc0310fd570cc75fd7a84c9f89146ad5e563
+│   │   ├── 0f
+│   │   │   └── 0d8abaef127ecb3680db00f03850580b8d3c9a
+│   │   ├── 12
+│   │   │   └── dfb16664213910c13bc953c98ac8c20aba87c0
+│   │   ├── 25
+│   │   │   └── 78dd007acb50a84fcf1278030323320d6f9a00
+│   │   ├── 28
+│   │   │   └── 3f6086c377304814f9caf5c1ed0ddf5a43c08e
+│   │   ├── 29
+│   │   │   └── 700509399ae2dfaef8feb8ab07f75eae4f4ae5
+│   │   ├── 2a
+│   │   │   └── f9d3319db48d7a0e2f85a18a439e37092aa804
+│   │   ├── 2e
+│   │   │   └── 3337dbf1e52e8229fae660411ef9cbcfeeb905
+│   │   ├── 35
+│   │   │   └── c87ab29f2df264c6e1f3568890aee1bd6cbbe3
+│   │   ├── 38
+│   │   │   └── a182e7eefba073873aa29a70aaacaff692fdfc
+│   │   ├── 3a
+│   │   │   └── de946abc92b97e1af92639b2a70cb84604580b
+│   │   ├── 3d
+│   │   │   └── 9068fa7806078e49fdf22a8d74968b9e86d19b
+│   │   ├── 41
+│   │   │   └── 04fca35ba9e783857e3207c38b0c404366892d
+│   │   ├── 42
+│   │   │   └── 2e2e7ba1aa677b05e1b5610e934a00c77461ef
+│   │   ├── 45
+│   │   │   ├── 15c027fc785f5b09363031a84a7f607daac62d
+│   │   │   └── 174cb2c274e11b19dad690c31d4062f2466186
+│   │   ├── 48
+│   │   │   ├── 6895d581a4a8cf29fa9af8159ee1494f4d4f88
+│   │   │   └── e975c0c67102de73321a9b614a44a827034b1e
+│   │   ├── 49
+│   │   │   └── e8b53959c6b6ab7cdb53af55d25780c082a34d
+│   │   ├── 4c
+│   │   │   └── 6b9b30ea62310a9c62513407f500e5f12c0cb2
+│   │   ├── 4f
+│   │   │   └── 3f72f09a41e7895f15ad27b33d9831b04b8856
+│   │   ├── 53
+│   │   │   └── 4163f8cc7aa47e7a33c380d8d9a81d9faa42a6
+│   │   ├── 54
+│   │   │   └── cc51a6982552999dbf2e414f431a78759ab73b
+│   │   ├── 55
+│   │   │   └── 29ef96c1a784e1cf3caf3d0edfb8d8bf3b2b91
+│   │   ├── 57
+│   │   │   └── f3a2983faed4fff75e578342c3751a8a81f8db
+│   │   ├── 58
+│   │   │   └── c1608536bb35211b293f7003a0ed827c4bdea5
+│   │   ├── 5f
+│   │   │   └── f5828334255e9dff4b2ad7e1d9ae4b40e5945d
+│   │   ├── 60
+│   │   │   └── 4c9a66ed3fa76107d672b2f00f1337c79c989a
+│   │   ├── 62
+│   │   │   ├── c6e43b3e4d40aea7d950727bfb66578227a16f
+│   │   │   ├── da5434c6bf234f58962086e2fe8d10e218501c
+│   │   │   └── fcb6fed7453b45d2dc449fd21525f9ad6b2423
+│   │   ├── 63
+│   │   │   └── 6e484c206608fc28b00a50c2fa8f22588acb01
+│   │   ├── 64
+│   │   │   └── 5cc6580a68c17ec401e1e761122f5b3ec5798d
+│   │   ├── 66
+│   │   │   └── 65b73a94a17280cb5829617726f783d5ef08a9
+│   │   ├── 6f
+│   │   │   └── b6bd7ce5b581edcebc8b1f4d71c8bdecf995e6
+│   │   ├── 70
+│   │   │   └── c2fa198de3db4419b07657ebb1dcc5578d8545
+│   │   ├── 73
+│   │   │   └── 7716029bfebdc41c8d039d166a8473680256a5
+│   │   ├── 7a
+│   │   │   └── 56472413a3021ec5cfb1ed4685278e3a83d3a2
+│   │   ├── 7b
+│   │   │   └── da50ff032e7487391c564221d13d358f8cb348
+│   │   ├── 81
+│   │   │   └── e77607fa19e14ff451184d7696ab941588b1ac
+│   │   ├── 83
+│   │   │   └── 51f252b711959138c1a76911af076987f54ae6
+│   │   ├── 84
+│   │   │   └── bbffee2e20b5627835dea6aa83111e12b26ed4
+│   │   ├── 85
+│   │   │   ├── 2dfc8dac60d771e21862e995cfcf5980c0d3e7
+│   │   │   └── f6eb263c11184c0529e40b2ee03259bb3657c3
+│   │   ├── 87
+│   │   │   └── 5f0edb2174e544c910c20049766cc07769b589
+│   │   ├── 89
+│   │   │   ├── 5ed42306c569b91e60a9f918adb8688483000c
+│   │   │   └── 927c09dc23f7846fd281c1a556c757ed3e432a
+│   │   ├── 8e
+│   │   │   └── fc418e9dd8755cfcacf0f7a3a7483b4039117b
+│   │   ├── 8f
+│   │   │   ├── 1b2b0cfda6b07f7d778514f006a7aebe69aa7e
+│   │   │   └── 7f7c2f10be7d5aa5c2760af1bc7a0a72de64eb
+│   │   ├── 90
+│   │   │   └── 630566b03b1ad49dd741b36011c6df54390e2f
+│   │   ├── 91
+│   │   │   └── ad7462365f40068ebcac42da4f8e705dcaad5d
+│   │   ├── 96
+│   │   │   └── 521e0a869579dcfb232d05aa7e7d2524c19bf7
+│   │   ├── 97
+│   │   │   └── dfbe7d6b0bf1945c125306a9ed92e4a6b416cc
+│   │   ├── a2
+│   │   │   └── 6a7622f20f16d8ac2ece2bb9b74f51df4a8f84
+│   │   ├── a3
+│   │   │   └── 5fed388bff045324eebed7f9aaac9339eab09f
+│   │   ├── a8
+│   │   │   └── da2b31937d713609cbb8206c62403739df3af7
+│   │   ├── b3
+│   │   │   └── d46ceffdf40d4102b81c2a37fdea26da300c93
+│   │   ├── bd
+│   │   │   └── 829c48ba05d9fabbd7493c505fda9073c6956c
+│   │   ├── be
+│   │   │   └── 5c6c7a534a57e44588e71bbbb2c25d4305daef
+│   │   ├── c1
+│   │   │   └── 493c8617986f000b3f03369231a606a717e34f
+│   │   ├── c7
+│   │   │   ├── 3cdf78dd98860aaa22dd6174628320f69d082b
+│   │   │   └── cba162d0297ab8cb5d1dcc24dd252d5ccb22c1
+│   │   ├── c9
+│   │   │   ├── 2c4baf8fed2ea70aa793f726d8ea8b61a71286
+│   │   │   ├── 48f8196d92b495b57b82277ece29ac92b0d038
+│   │   │   └── 87fe3f5f8dfb79d19c3aa5e358c95e49a9fbb8
+│   │   ├── cf
+│   │   │   ├── 428b7340c344d30b355b5acbb7a54371df824b
+│   │   │   └── 4a0df80734fbeef126836af26414656c769d8d
+│   │   ├── d2
+│   │   │   └── 11e5827b9f8ee8760eb21e64b8ffe3e2a669a0
+│   │   ├── d3
+│   │   │   └── 005ed2f86a55e612ae84abd948b61d337a6a09
+│   │   ├── d4
+│   │   │   └── 7f0dbcd219d60882cccc65fb3eb55b3211ed38
+│   │   ├── dc
+│   │   │   └── cc3baf4f6eddf5a42954940ac068b36de4d402
+│   │   ├── df
+│   │   │   └── 205a7c28510bd81ab9aeb1cb7fcb1081a2087e
+│   │   ├── e3
+│   │   │   └── c73bfdeacf5db87e17b2c549f128b9c5428413
+│   │   ├── ea
+│   │   │   └── f725984e4841050d8ef4c1969bd9021f82d6b6
+│   │   ├── ec
+│   │   │   ├── 82ce469bdddad9283ef0125a7a4c71a3850157
+│   │   │   └── b43bf3593e20f4636ed0f9a3cf7a03597a29ea
+│   │   ├── f1
+│   │   │   └── 2c57dd9ec9a02b59fb6e25d566b022d6fd3ad6
+│   │   ├── f5
+│   │   │   └── 4286a66cd4c3dc92c1798a8f74292118c4f6b0
+│   │   ├── f9
+│   │   │   └── 7bd8924749dea8bcb0b02f2fbc4b923fc56878
+│   │   ├── fb
+│   │   │   └── 2f733c34ef7eb046096c4e806f84367e8529a0
+│   │   ├── ff
+│   │   │   └── cb62a957ea69faafd3bdacb9deb732c7a794e4
+│   │   ├── info
+│   │   └── pack
+│   └── refs
+│       ├── heads
+│       │   └── main
+│       ├── remotes
+│       │   └── origin
+│       │       └── main
+│       └── tags
+├── .gitignore
+├── includes
+│   ├── class-resales-admin.php
+│   ├── class-resales-client.php
+│   ├── class-resales-settings.php
+│   └── class-resales-shortcodes.php
+├── proyecto-tree.txt
+├── README.md
+├── resales-api.zip
+├── resales.php
+├── test-resales-api.php
+└── TESTS.md
+
+93 directories, 122 files
