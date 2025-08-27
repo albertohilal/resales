@@ -29,6 +29,10 @@ class Resales_Shortcodes {
             'query_id'          => isset($get['qid'])  ? sanitize_text_field($get['qid']) : '',
         ], $atts, 'lusso_developments');
 
+        // Normalizar order a valor V6 numérico
+        $order_map = ['recent'=>3, 'price_asc'=>1, 'price_desc'=>2];
+        $order_v6 = isset($order_map[$a['order']]) ? $order_map[$a['order']] : 3;
+
         $client = Resales_Client::instance();
 
         $args = [
@@ -39,14 +43,12 @@ class Resales_Shortcodes {
     if (!empty($a['api_id']))           $args['P_ApiId'] = (int)$a['api_id'];
     elseif (!empty($a['agency_filter_id'])) $args['P_Agency_FilterId'] = (int)$a['agency_filter_id'];
 
-    if ($a['loc']!=='')      $args['P_Location'] = $a['loc'];
-    if ($a['type']!=='')     $args['P_PropertyTypes'] = $a['type'];
-    if ($a['price_max']!=='')$args['P_Max'] = (int)$a['price_max'];
+    // Mapping de filtros a V6
+    if ($a['loc']!=='')      $args['P_Location'] = $a['loc']; // loc → P_Location
+    if ($a['type']!=='')     $args['P_PropertyTypes'] = $a['type']; // type → P_PropertyTypes
+    if ($a['price_max']!=='')$args['P_Max'] = (int)$a['price_max']; // price_max → P_Max
     if (!empty($a['query_id'])) $args['P_QueryId'] = $a['query_id'];
-    // Orden
-    if ($a['order']==='price_asc')   $args['P_SortType']='price_asc';
-    elseif ($a['order']==='price_desc') $args['P_SortType']='price_desc';
-    else $args['P_SortType']='recent';
+    $args['P_SortType'] = $order_v6; // order → P_SortType (numérico)
 
         $res = $client->search($args);
 
@@ -124,19 +126,29 @@ class Resales_Shortcodes {
                 }
                 echo '</div>';
 
-        // Paginación simple: añade qid a los enlaces (recomendación V6) :contentReference[oaicite:11]{index=11}
+        // Paginación simple: añade todos los filtros activos a los enlaces
         if (!empty($qi)){
             $qid   = urlencode($qi['QueryId'] ?? ($a['query_id'] ?? ''));
             $page  = (int)$a['page'];
             $per   = (int)$a['per_page'];
-            $base  = remove_query_arg(['page','qid']);
+            $base  = remove_query_arg(['page','qid','loc','type','price_max','order','per_page']);
+            $common_args = [
+                'qid'=>$qid,
+                'loc'=>$a['loc'],
+                'type'=>$a['type'],
+                'price_max'=>$a['price_max'],
+                'order'=>$a['order'],
+                'per_page'=>$a['per_page']
+            ];
             echo '<nav class="resales-pager" style="margin:10px 0;">';
             if ($page > 1){
-                $prev = add_query_arg(['page'=>$page-1,'qid'=>$qid], $base);
-                echo '<a href="'.esc_url($prev).'">« Anterior</a> ';
+                $prev_args = array_merge($common_args, ['page'=>$page-1]);
+                $prev = add_query_arg($prev_args, $base);
+                echo '<a href="'.esc_url($prev).'" rel="prev">« Anterior</a> ';
             }
-            $next = add_query_arg(['page'=>$page+1,'qid'=>$qid], $base);
-            echo '<a href="'.esc_url($next).'">Siguiente »</a>';
+            $next_args = array_merge($common_args, ['page'=>$page+1]);
+            $next = add_query_arg($next_args, $base);
+            echo '<a href="'.esc_url($next).'" rel="next">Siguiente »</a>';
             echo '</nav>';
         }
 

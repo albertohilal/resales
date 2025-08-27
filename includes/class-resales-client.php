@@ -49,23 +49,30 @@ class Resales_Client {
             $params['p_new_devs'] = $newDevs;
         }
 
-    // Paginación V6: PageSize / PageNo / QueryId
+    // --- Mapping de paginación y orden ---
+    // per_page → P_PageSize (12–48, fallback 15)
     $pageSize = isset($args['p_PageSize']) ? (int)$args['p_PageSize'] : 15;
-    if (!in_array($pageSize, [15,30,45])) $pageSize = 15;
-    $params['p_PageSize'] = min(40, max(1, $pageSize));
-    $params['p_PageNo']   = isset($args['p_PageNo']) ? max(1, (int)$args['p_PageNo']) : 1;
+    if ($pageSize < 12 || $pageSize > 48) $pageSize = 15;
+    $params['P_PageSize'] = $pageSize;
+    // page → P_PageNo (>=1, fallback 1)
+    $params['P_PageNo']   = isset($args['p_PageNo']) ? max(1, (int)$args['p_PageNo']) : 1;
+    // order → P_SortType (numérico V6: 1=asc, 2=desc, 3=recent)
+    $sortType = isset($args['P_SortType']) ? (int)$args['P_SortType'] : 3;
+    if (!in_array($sortType, [1,2,3])) $sortType = 3;
+    $params['P_SortType'] = $sortType;
+    // QueryId
     if (!empty($args['P_QueryId'])) $params['P_QueryId']  = sanitize_text_field($args['P_QueryId']);
 
         // Otros filtros que quieras pasar tal cual (ejemplos comunes)
         foreach ([
-            'P_Beds','P_Baths','P_Min','P_Max','P_Location','P_PropertyTypes','P_SortType',
+            'P_Beds','P_Baths','P_Min','P_Max','P_Location','P_PropertyTypes',
             'p_images','p_show_dev_prices','P_onlydecree218','P_RTA'
         ] as $k){
             if (isset($args[$k]) && $args[$k] !== '') $params[$k] = $args[$k];
         }
 
-        // Diagnóstico cuando WP_DEBUG está activo
-        if (defined('WP_DEBUG') && WP_DEBUG) $params['p_sandbox'] = 'true'; // :contentReference[oaicite:9]{index=9}
+    // Diagnóstico cuando WP_DEBUG está activo (solo test)
+    if (defined('WP_DEBUG') && WP_DEBUG) $params['p_sandbox'] = 'true';
 
         $url = esc_url_raw( add_query_arg($params, $this->base) );
         $this->log('URL → ' . preg_replace('/(p2=)[^&]+/','\\1•••', $url)); // oculta p2
