@@ -1,3 +1,40 @@
+/* Barra de filtros arriba del grid */
+.lr-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 24px;
+	align-items: center;
+}
+.lr-filters select,
+.lr-filters input {
+	min-width: 140px;
+	padding: 6px 8px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	font-size: 1em;
+}
+.lr-filters button {
+	padding: 6px 16px;
+	border-radius: 4px;
+	border: none;
+	background: #0073aa;
+	color: #fff;
+	font-weight: 600;
+	cursor: pointer;
+}
+@media (max-width: 768px) {
+	.lr-filters {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
+	.lr-filters select,
+	.lr-filters input {
+		min-width: 0;
+		width: 100%;
+	}
+}
 
 .lusso-developments { display:flex; flex-direction:column; gap:20px; }
 .lusso-card { display:flex; flex-direction:row; border:1px solid #ddd; border-radius:8px; overflow:hidden; }

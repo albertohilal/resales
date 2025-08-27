@@ -49,17 +49,19 @@ class Resales_Client {
             $params['p_new_devs'] = $newDevs;
         }
 
-        // Paginación V6: PageSize / PageNo / QueryId :contentReference[oaicite:8]{index=8}
-        if (isset($args['p_PageSize'])) $params['p_PageSize'] = min(40, max(1, (int)$args['p_PageSize']));
-        if (isset($args['p_PageNo']))   $params['p_PageNo']   = max(1, (int)$args['p_PageNo']);
-        if (!empty($args['P_QueryId'])) $params['P_QueryId']  = sanitize_text_field($args['P_QueryId']);
+    // Paginación V6: PageSize / PageNo / QueryId
+    $pageSize = isset($args['p_PageSize']) ? (int)$args['p_PageSize'] : 15;
+    if (!in_array($pageSize, [15,30,45])) $pageSize = 15;
+    $params['p_PageSize'] = min(40, max(1, $pageSize));
+    $params['p_PageNo']   = isset($args['p_PageNo']) ? max(1, (int)$args['p_PageNo']) : 1;
+    if (!empty($args['P_QueryId'])) $params['P_QueryId']  = sanitize_text_field($args['P_QueryId']);
 
         // Otros filtros que quieras pasar tal cual (ejemplos comunes)
         foreach ([
             'P_Beds','P_Baths','P_Min','P_Max','P_Location','P_PropertyTypes','P_SortType',
             'p_images','p_show_dev_prices','P_onlydecree218','P_RTA'
         ] as $k){
-            if (isset($args[$k])) $params[$k] = $args[$k];
+            if (isset($args[$k]) && $args[$k] !== '') $params[$k] = $args[$k];
         }
 
         // Diagnóstico cuando WP_DEBUG está activo
@@ -100,12 +102,15 @@ class Resales_Client {
         }
 
         // Solicitar imágenes para developments (cards estilo Promociones)
-        // Doc V6: SearchProperties > p_images (cantidad), p_image_size (thumbnail/medium)
         if (!isset($args['p_images'])) {
-            $args['p_images'] = 1; // Al menos 1 imagen por ítem
+            $args['p_images'] = 1;
         }
         if (!isset($args['p_image_size'])) {
-            $args['p_image_size'] = 'medium'; // Tamaño adecuado para cards
+            $args['p_image_size'] = 'medium';
+        }
+        // Fallback para orden
+        if (isset($args['P_SortType']) && !in_array($args['P_SortType'],['recent','price_asc','price_desc'])) {
+            $args['P_SortType'] = 'recent';
         }
 
         $url = $this->build_url($args);
