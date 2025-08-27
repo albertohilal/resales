@@ -1,3 +1,35 @@
+/* TerraCardGrid style */
+.lr-grid { display:grid; gap:24px; grid-template-columns:repeat(3,1fr); }
+@media(max-width: 992px){ .lr-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width: 576px){ .lr-grid { grid-template-columns:1fr; } }
+
+.lr-card {
+	background:#fff;
+	border:1px solid #eee;
+	border-radius:16px;
+	padding:16px;
+	transition:transform .2s, box-shadow .2s;
+}
+.lr-card:hover {
+	transform:translateY(-2px);
+	box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+
+.lr-card__media img {
+	width:100%;
+	height:clamp(200px,26vw,320px);
+	object-fit:cover;
+	border-radius:12px;
+}
+.lr-card__placeholder {
+	height:clamp(200px,26vw,320px);
+	background:#f2f2f2;
+	border-radius:12px;
+}
+
+.lr-card__title { font-size:clamp(20px,2.1vw,28px); line-height:1.25; margin:.5rem 0; }
+.lr-card__price { font-weight:700; }
+.lr-card__cta { display:inline-block; margin-top:.5rem; }
 /* Barra de filtros arriba del grid */
 .lr-filters {
 	display: flex;

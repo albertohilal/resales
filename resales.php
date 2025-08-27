@@ -1,7 +1,7 @@
 <?php
 // Encolar CSS personalizado para el grid y filtros
 add_action('wp_enqueue_scripts', function(){
-    wp_enqueue_style('lusso-resales', plugin_dir_url(__FILE__).'assets/css/lusso-resales.css', [], '1.0');
+    wp_enqueue_style('lusso-resales', plugins_url('assets/css/lusso-resales.css', __FILE__), [], '1.0');
 });
 /**
  * Plugin Name: Resales API

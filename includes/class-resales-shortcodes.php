@@ -92,33 +92,37 @@ class Resales_Shortcodes {
             <button type="reset" onclick="window.location.href=window.location.pathname;return false;">Reset</button>
         </form>
         <?php
-        echo '<div class="lr-grid">';
-        foreach ($items as $p){
-            $title = $client->build_title($p);
-            $img   = !empty($p['first_image_url']) ? $p['first_image_url'] : ($p['MainImage'] ?? '');
-            $desc  = wp_strip_all_tags($p['Description'] ?? '');
-            $desc  = mb_substr($desc,0,180).(mb_strlen($desc)>180?'':'');
-            $loc   = $p['Location'] ?? ($p['Area'] ?? ($p['Province'] ?? ''));
-            $price = isset($p['Price']) && $p['Price']>0 ? esc_html(($p['Currency'] ?? '').' '.number_format((float)$p['Price'],0,',','.')) : 'Consultar precio';
-            $details_url = !empty($p['DetailUrl']) ? esc_url($p['DetailUrl']) : '#';
-            ?>
-            <article class="lr-card" style="border:1px solid #eee;padding:12px;margin:10px;max-width:340px;">
-                <?php if ($img): ?>
-                    <figure class="lr-card__media">
-                        <img loading="lazy" decoding="async" src="<?php echo esc_url($img); ?>" alt="<?php echo esc_attr($title . ' – ' . $loc); ?>" style="width:100%;height:auto;">
-                    </figure>
-                <?php else: ?>
-                    <div class="lr-card__placeholder" aria-hidden="true"></div>
-                <?php endif; ?>
-                <h3 style="margin:.6em 0;"><?php echo esc_html($title ?: 'Propiedad'); ?></h3>
-                <?php if ($loc): ?><div class="lr-card__loc" style="font-size:.95em;color:#888;"><?php echo esc_html($loc); ?></div><?php endif; ?>
-                <p style="font-size:.9em;color:#555;"><?php echo esc_html($desc); ?></p>
-                <div class="lr-card__price" style="font-weight:600;">Desde <?php echo $price; ?></div>
-                <a class="lr-card__cta" href="<?php echo $details_url; ?>" style="display:inline-block;margin-top:8px;padding:6px 16px;background:#0073aa;color:#fff;border-radius:4px;text-decoration:none;">Ver detalles</a>
-            </article>
-            <?php
-        }
-        echo '</div>';
+                echo '<div class="lr-grid">';
+                foreach ($items as $p){
+                        $title = $client->build_title($p);
+                        $img   = !empty($p['first_image_url']) ? $p['first_image_url'] : ($p['MainImage'] ?? '');
+                        $desc  = wp_strip_all_tags($p['Description'] ?? '');
+                        $desc  = mb_substr($desc,0,180).(mb_strlen($desc)>180?'…':'');
+                        $loc   = $p['Location'] ?? ($p['Area'] ?? ($p['Province'] ?? ''));
+                        $price = isset($p['Price']) && $p['Price']>0 ? esc_html(($p['Currency'] ?? '').' '.number_format((float)$p['Price'],0,',','.')) : 'Consultar precio';
+                        $details_url = !empty($p['DetailUrl']) ? esc_url($p['DetailUrl']) : '#';
+                        ?>
+                        <article class="lr-card">
+                            <figure class="lr-card__media">
+                                <?php if ($img): ?>
+                                    <img loading="lazy" decoding="async" src="<?php echo esc_url($img); ?>" alt="<?php echo esc_attr($title . ' – ' . $loc); ?>">
+                                <?php else: ?>
+                                    <div class="lr-card__placeholder" aria-hidden="true"></div>
+                                <?php endif; ?>
+                            </figure>
+                            <div class="lr-card__body">
+                                <h3 class="lr-card__title"><?php echo esc_html($title ?: 'Propiedad'); ?></h3>
+                                <div class="lr-card__meta">
+                                    <span class="lr-card__price"><?php echo $price; ?></span>
+                                    <?php if ($loc): ?><span class="lr-card__loc"><?php echo esc_html($loc); ?></span><?php endif; ?>
+                                </div>
+                                <p class="lr-card__excerpt"><?php echo esc_html($desc); ?></p>
+                                <a class="lr-card__cta" href="<?php echo $details_url; ?>">Ver detalles</a>
+                            </div>
+                        </article>
+                        <?php
+                }
+                echo '</div>';
 
         // Paginación simple: añade qid a los enlaces (recomendación V6) :contentReference[oaicite:11]{index=11}
         if (!empty($qi)){
