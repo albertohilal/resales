@@ -63,6 +63,7 @@ class Resales_Shortcodes {
         ob_start();
         // Filtros: barra superior con accesibilidad
         // Validar price_max
+        $price_max_original = $a['price_max'];
         $a['price_max'] = (is_numeric($a['price_max']) && $a['price_max'] >= 0) ? $a['price_max'] : 0;
         ?>
         <form method="get" class="lr-filters" style="margin-bottom:24px;" onsubmit="setTimeout(function(){document.getElementById('results-title').focus();}, 100);">
@@ -85,6 +86,9 @@ class Resales_Shortcodes {
             </select>
             <label for="filter-price-max">Precio máximo</label>
             <input id="filter-price-max" name="price_max" type="number" min="0" step="1000" placeholder="Precio hasta" value="<?= esc_attr($a['price_max']); ?>">
+                <?php if (isset($price_max_original) && $price_max_original !== '' && $price_max_original != $a['price_max']): ?>
+                    <span class="lr-filters__msg" style="color:#888;font-size:0.95em;">El valor de precio máximo se ha normalizado a 0.</span>
+                <?php endif; ?>
             <label for="filter-order">Orden</label>
             <select id="filter-order" name="order">
                 <option value="recent"<?= $a['order']==='recent'?' selected':''; ?>>Más recientes</option>
@@ -154,7 +158,7 @@ class Resales_Shortcodes {
                 'order'=>$a['order'],
                 'per_page'=>$a['per_page']
             ];
-            echo '<nav class="resales-pager" style="margin:10px 0;">';
+            echo '<nav class="resales-pager" style="margin:10px 0;" aria-label="Paginación de resultados">';
             if ($page > 1){
                 $prev_args = array_merge($common_args, ['page'=>$page-1]);
                 $prev = add_query_arg($prev_args, $base);
