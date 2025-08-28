@@ -1,5 +1,19 @@
+/* Accesibilidad y UX tweaks */
+.lr-filters label {
+	font-size: 0.98em;
+	color: #555;
+	margin-right: 8px;
+	margin-bottom: 2px;
+	display: block;
+}
+.lr-results-status {
+	font-size: 1em;
+	color: #666;
+	margin-bottom: 16px;
+	font-family: var(--font-secondary, Arial, sans-serif);
+}
 /* TerraCardGrid style */
-.lr-grid { display:grid; gap:24px; grid-template-columns:repeat(3,1fr); }
+.lr-grid { display:grid; gap:32px 24px; grid-template-columns:repeat(3,1fr); }
 @media(max-width: 992px){ .lr-grid { grid-template-columns:repeat(2,1fr); } }
 @media(max-width: 576px){ .lr-grid { grid-template-columns:1fr; } }
 
@@ -29,14 +43,38 @@
 
 .lr-card__title { font-size:clamp(20px,2.1vw,28px); line-height:1.25; margin:.5rem 0; }
 .lr-card__price { font-weight:700; }
-.lr-card__cta { display:inline-block; margin-top:.5rem; }
+.lr-card__cta {
+	display: inline-block;
+	margin-top: .5rem;
+	padding: 8px 20px;
+	background: #0073aa;
+	color: #fff;
+	font-weight: 600;
+	border-radius: 6px;
+	text-decoration: none;
+	transition: background .2s;
+	border: none;
+	box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.lr-card__cta:hover, .lr-card__cta:focus {
+	background: #005a8c;
+	color: #fff;
+	outline: none;
+}
 /* Barra de filtros arriba del grid */
 .lr-filters {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
-	margin-bottom: 24px;
+	margin-bottom: 16px;
 	align-items: center;
+}
+.lr-results-status {
+	margin-bottom: 16px;
+}
+.lr-grid {
+	margin-bottom: 16px;
+}
 }
 .lr-filters select,
 .lr-filters input {
@@ -66,7 +104,6 @@
 		min-width: 0;
 		width: 100%;
 	}
-}
 
 .lusso-developments { display:flex; flex-direction:column; gap:20px; }
 .lusso-card { display:flex; flex-direction:row; border:1px solid #ddd; border-radius:8px; overflow:hidden; }
