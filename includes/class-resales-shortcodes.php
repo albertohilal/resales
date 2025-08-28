@@ -4,6 +4,19 @@ if (!defined('ABSPATH')) exit;
 if (!class_exists('Resales_Shortcodes')):
 
 class Resales_Shortcodes {
+    /** Shortcode de detalle de desarrollo */
+    public function sc_development_detail($atts = []){
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if (!$id) return '<div class="resales-error">Propiedad no encontrada</div>';
+        $client = Resales_Client::instance();
+        $data = $client->get_development_details($id);
+        if (!$data || empty($data['title'])) return '<div class="resales-error">Propiedad no encontrada</div>';
+        // Extraer variables para el template
+        extract($data);
+        ob_start();
+        include dirname(__DIR__).'/templates/single-development.php';
+        return ob_get_clean();
+    }
     private static $instance = null;
     public static function instance(){ return self::$instance ?: (self::$instance = new self()); }
     private function __construct(){
@@ -121,8 +134,7 @@ class Resales_Shortcodes {
                         $loc   = $p['Location'] ?? ($p['Area'] ?? ($p['Province'] ?? ''));
                         $price = isset($p['Price']) && $p['Price']>0 ? esc_html(($p['Currency'] ?? '').' '.number_format((float)$p['Price'],0,',','.')) : 'Consultar precio';
                         $id    = !empty($p['Id']) ? (int)$p['Id'] : 0;
-                        $slug  = sanitize_title($title);
-                        $details_url = $id ? esc_url("/property/$id/$slug/") : '#';
+                        $details_url = $id ? add_query_arg(['id'=>$id], site_url('/development/')) : '';
                         ?>
                         <article class="lr-card">
                             <figure class="lr-card__media">
@@ -139,10 +151,26 @@ class Resales_Shortcodes {
                                     <?php if ($loc): ?><span class="lr-card__loc"><?php echo esc_html($loc); ?></span><?php endif; ?>
                                 </div>
                                 <p class="lr-card__excerpt"><?php echo esc_html($desc); ?></p>
-                                <a class="lr-card__cta" href="<?php echo $details_url; ?>" rel="bookmark" aria-label="Ver detalles de <?php echo esc_attr($title); ?> en <?php echo esc_attr($loc); ?>">Ver detalles</a>
+                                <?php if ($details_url): ?>
+                                <a class="lr-card__cta" href="<?php echo esc_url($details_url); ?>" rel="bookmark" aria-label="Ver detalles de <?php echo esc_attr($title); ?> en <?php echo esc_attr($loc); ?>">Ver detalles</a>
+                                <?php endif; ?>
                             </div>
                         </article>
                         <?php
+    /** Shortcode de detalle de desarrollo */
+    public function sc_development_detail($atts = []){
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if (!$id) return '<div class="resales-error">Propiedad no encontrada</div>';
+        $client = Resales_Client::instance();
+        $data = $client->get_development_details($id);
+        if (!$data || empty($data['title'])) return '<div class="resales-error">Propiedad no encontrada</div>';
+        // Extraer variables para el template
+        extract($data);
+        ob_start();
+        include dirname(__DIR__).'/templates/single-development.php';
+        return ob_get_clean();
+    }
+    add_shortcode('resales_development_detail', [$this,'sc_development_detail']);
                 }
                 echo '</div>';
 
@@ -160,18 +188,47 @@ class Resales_Shortcodes {
                 'order'=>$a['order'],
                 'per_page'=>$a['per_page']
             ];
-            echo '<nav class="resales-pager" style="margin:10px 0;" aria-label="Paginación de resultados">';
+            echo '<nav role="navigation" class="resales-pager" style="margin:10px 0;" aria-label="Paginación de resultados">';
+            // Página anterior
             if ($page > 1){
                 $prev_args = array_merge($common_args, ['page'=>$page-1]);
                 $prev = add_query_arg($prev_args, $base);
                 echo '<a href="'.esc_url($prev).'" rel="prev" aria-label="Página '.($page-1).' de '.$totalPages.'">« Anterior</a> ';
             }
+            // Paginación indexada (1 ... n)
+            for ($i = 1; $i <= $totalPages; $i++) {
+                $args_i = array_merge($common_args, ['page'=>$i]);
+                $url_i = add_query_arg($args_i, $base);
+                $aria_current = ($i === $page) ? ' aria-current="page"' : '';
+                echo '<a href="'.esc_url($url_i).'"'.$aria_current.' aria-label="Página '.$i.' de '.$totalPages.'">'.$i.'</a> ';
+            }
+            // Página siguiente
             if ($page < $totalPages) {
                 $next_args = array_merge($common_args, ['page'=>$page+1]);
                 $next = add_query_arg($next_args, $base);
                 echo '<a href="'.esc_url($next).'" rel="next" aria-label="Página '.($page+1).' de '.$totalPages.'">Siguiente »</a>';
             }
             echo '</nav>';
+            // SEO: rel prev/next en head
+            add_action('wp_head', function() use ($page, $totalPages, $common_args, $base) {
+                if ($totalPages > 1) {
+                    if ($page > 1) {
+                        $prev_args = array_merge($common_args, ['page'=>$page-1]);
+                        $prev = esc_url(add_query_arg($prev_args, $base));
+                        echo '<link rel="prev" href="'.$prev.'">';
+                    }
+                    if ($page < $totalPages) {
+                        $next_args = array_merge($common_args, ['page'=>$page+1]);
+                        $next = esc_url(add_query_arg($next_args, $base));
+                        echo '<link rel="next" href="'.$next.'">';
+                    }
+                }
+            }, 99);
+        }
+        // Skip to content accesible
+        if (!isset($GLOBALS['resales_skiplink'])) {
+            echo '<a href="#results-title" class="skip-link">Saltar al contenido</a>';
+            $GLOBALS['resales_skiplink'] = true;
         }
 
         return ob_get_clean();
@@ -189,6 +246,20 @@ class Resales_Shortcodes {
             <button type="submit">Buscar</button>
         </form>
         <?php
+        return ob_get_clean();
+    }
+
+    /** Shortcode de detalle de desarrollo */
+    public function sc_development_detail($atts = []){
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if (!$id) return '<div class="resales-error">Propiedad no encontrada</div>';
+        $client = Resales_Client::instance();
+        $data = $client->get_development_details($id);
+        if (!$data || empty($data['title'])) return '<div class="resales-error">Propiedad no encontrada</div>';
+        // Extraer variables para el template
+        extract($data);
+        ob_start();
+        include dirname(__DIR__).'/templates/single-development.php';
         return ob_get_clean();
     }
 }
