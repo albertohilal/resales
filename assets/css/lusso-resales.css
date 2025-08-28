@@ -66,14 +66,14 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
-	margin-bottom: 20px;
+	margin-bottom: 16px;
 	align-items: center;
 }
 .lr-results-status {
-	margin-bottom: 20px;
+	margin-bottom: 16px;
 }
 .lr-grid {
-	margin-bottom: 0;
+	margin-bottom: 16px;
 }
 }
 .lr-filters select,

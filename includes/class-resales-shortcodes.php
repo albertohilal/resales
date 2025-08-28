@@ -166,9 +166,11 @@ class Resales_Shortcodes {
                 $prev = add_query_arg($prev_args, $base);
                 echo '<a href="'.esc_url($prev).'" rel="prev" aria-label="Página '.($page-1).' de '.$totalPages.'">« Anterior</a> ';
             }
-            $next_args = array_merge($common_args, ['page'=>$page+1]);
-            $next = add_query_arg($next_args, $base);
-            echo '<a href="'.esc_url($next).'" rel="next" aria-label="Página '.($page+1).' de '.$totalPages.'">Siguiente »</a>';
+            if ($page < $totalPages) {
+                $next_args = array_merge($common_args, ['page'=>$page+1]);
+                $next = add_query_arg($next_args, $base);
+                echo '<a href="'.esc_url($next).'" rel="next" aria-label="Página '.($page+1).' de '.$totalPages.'">Siguiente »</a>';
+            }
             echo '</nav>';
         }
 
