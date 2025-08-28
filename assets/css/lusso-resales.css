@@ -66,8 +66,15 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
 	align-items: center;
+}
+.lr-results-status {
+	margin-bottom: 20px;
+}
+.lr-grid {
+	margin-bottom: 0;
+}
 }
 .lr-filters select,
 .lr-filters input {
@@ -97,7 +104,6 @@
 		min-width: 0;
 		width: 100%;
 	}
-}
 
 .lusso-developments { display:flex; flex-direction:column; gap:20px; }
 .lusso-card { display:flex; flex-direction:row; border:1px solid #ddd; border-radius:8px; overflow:hidden; }
