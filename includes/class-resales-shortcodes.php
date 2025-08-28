@@ -122,7 +122,7 @@ class Resales_Shortcodes {
                         $price = isset($p['Price']) && $p['Price']>0 ? esc_html(($p['Currency'] ?? '').' '.number_format((float)$p['Price'],0,',','.')) : 'Consultar precio';
                         $id    = !empty($p['Id']) ? (int)$p['Id'] : 0;
                         $slug  = sanitize_title($title);
-                        $details_url = $id ? esc_url("/property/$id/$slug/") : '#';
+                        $details_url = $id ? esc_url(home_url("/property/$id/$slug/")) : '';
                         ?>
                         <article class="lr-card">
                             <figure class="lr-card__media">
@@ -139,7 +139,9 @@ class Resales_Shortcodes {
                                     <?php if ($loc): ?><span class="lr-card__loc"><?php echo esc_html($loc); ?></span><?php endif; ?>
                                 </div>
                                 <p class="lr-card__excerpt"><?php echo esc_html($desc); ?></p>
-                                <a class="lr-card__cta" href="<?php echo $details_url; ?>" rel="bookmark" aria-label="Ver detalles de <?php echo esc_attr($title); ?> en <?php echo esc_attr($loc); ?>">Ver detalles</a>
+                                <?php if ($details_url): ?>
+                                <a class="lr-card__cta" data-testid="property-cta" href="<?php echo $details_url; ?>" rel="bookmark" aria-label="Ver detalles de <?php echo esc_attr($title); ?> en <?php echo esc_attr($loc); ?>">Ver detalles</a>
+                                <?php endif; ?>
                             </div>
                         </article>
                         <?php

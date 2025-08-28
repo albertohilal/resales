@@ -1,0 +1,254 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Ir al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#content"
+  - navigation "Menu" [ref=e7]:
+    - list [ref=e8]:
+      - listitem [ref=e9]:
+        - link "Inicio" [ref=e10] [cursor=pointer]:
+          - /url: https://lussogroup.es/
+      - listitem [ref=e11]:
+        - link "About" [ref=e12] [cursor=pointer]:
+          - /url: https://lussogroup.es/about/
+      - listitem [ref=e13]:
+        - link "Properties" [ref=e14] [cursor=pointer]:
+          - /url: https://lussogroup.es/properties/
+      - listitem [ref=e15]:
+        - link "Start" [ref=e16] [cursor=pointer]:
+          - /url: https://lussogroup.es/start/
+      - listitem [ref=e17]:
+        - link "Contact" [ref=e18] [cursor=pointer]:
+          - /url: https://lussogroup.es/contact/
+      - listitem [ref=e19]:
+        - link "Services" [ref=e20] [cursor=pointer]:
+          - /url: https://lussogroup.es/services/
+      - listitem [ref=e21]:
+        - link "English" [ref=e22] [cursor=pointer]:
+          - /url: https://lussogroup.es/english/
+      - listitem [ref=e23]:
+        - link "Contáctanos" [ref=e24] [cursor=pointer]:
+          - /url: https://lussogroup.es/contactanos/
+  - generic [ref=e28]:
+    - generic [ref=e29]:
+      - generic [ref=e30]: Ubicación
+      - combobox "Ubicación" [ref=e31]:
+        - option "Elija una ubicación" [selected]
+        - option "Benahavis"
+        - option "Casares"
+        - option "Estepona"
+        - option "Marbella"
+        - option "Sotogrande"
+      - generic [ref=e32]: Tipo
+      - combobox "Tipo" [ref=e33]:
+        - option "Todos los tipos" [selected]
+        - option "Villa"
+        - option "Apartamento"
+        - option "Adosado"
+        - option "Ático"
+      - generic [ref=e34]: Precio máximo
+      - spinbutton "Precio máximo" [ref=e35]: "0"
+      - generic [ref=e36]: Orden
+      - combobox "Orden" [ref=e37]:
+        - option "Más recientes" [selected]
+        - option "Precio ascendente"
+        - option "Precio descendente"
+      - generic [ref=e38]: Por página
+      - combobox "Por página" [ref=e39]:
+        - option "15 props. por página" [selected]
+        - option "30 props. por página"
+        - option "45 props. por página"
+      - button "Buscar" [ref=e40] [cursor=pointer]
+      - button "Reset" [ref=e41] [cursor=pointer]
+    - status [ref=e42]: 15 resultados – página 1 de 1
+    - heading "Resultados" [level=2] [ref=e43]
+    - generic [ref=e44]:
+      - article [ref=e45]:
+        - figure [ref=e46]:
+          - img "Nueva Promoción en Mijas – Mijas"
+        - generic [ref=e47]:
+          - heading "Nueva Promoción en Mijas" [level=3] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: EUR 295.000
+            - generic [ref=e51]: Mijas
+          - paragraph [ref=e52]: "Nueva Promoción: Precios desde €295,000 a €340,000. [Dormitorios: 2] [Baños: 2] [Construidos: 92m2 - 106m2]. Próximo Desarrollo Inmobiliario en Riviera del Sol - Málaga Presentam…"
+          - link "Ver detalles de Nueva Promoción en Mijas en Mijas" [ref=e53] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e54]:
+        - figure [ref=e55]:
+          - img "Nueva Promoción en Estepona – Estepona"
+        - generic [ref=e56]:
+          - heading "Nueva Promoción en Estepona" [level=3] [ref=e57]
+          - generic [ref=e58]:
+            - generic [ref=e59]: EUR 379.000
+            - generic [ref=e60]: Estepona
+          - paragraph [ref=e61]: "Nueva Promoción: Precios desde €379,000 a €966,000. [Dormitorios: 1 - 4] [Baños: 1 - 2] [Construidos: 51m2 - 124m2]. Esto no es simplemente un lugar para vivir. Es un ecosistema d…"
+          - link "Ver detalles de Nueva Promoción en Estepona en Estepona" [ref=e62] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e63]:
+        - figure [ref=e64]:
+          - img "Nueva Promoción en Torremolinos – Torremolinos"
+        - generic [ref=e65]:
+          - heading "Nueva Promoción en Torremolinos" [level=3] [ref=e66]
+          - generic [ref=e67]:
+            - generic [ref=e68]: EUR 317.500
+            - generic [ref=e69]: Torremolinos
+          - paragraph [ref=e70]: "Nueva Promoción: Precios desde €317,500 a €631,500. [Dormitorios: 1 - 4] [Baños: 1 - 3] [Construidos: 86m2 - 192m2]. Un magnífico proyecto compuesto por 61 viviendas de 1, 2, 3 y …"
+          - link "Ver detalles de Nueva Promoción en Torremolinos en Torremolinos" [ref=e71] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e72]:
+        - figure [ref=e73]:
+          - img "Nueva Promoción en Torremolinos – Torremolinos"
+        - generic [ref=e74]:
+          - heading "Nueva Promoción en Torremolinos" [level=3] [ref=e75]
+          - generic [ref=e76]:
+            - generic [ref=e77]: EUR 399.000
+            - generic [ref=e78]: Torremolinos
+          - paragraph [ref=e79]: "Nueva Promoción: Precios desde €399,000 a €862,000. [Dormitorios: 2 - 4] [Baños: 2] [Construidos: 85m2 - 281m2]. Esta promoción se encuentra en una de las mejores zonas de Torremo…"
+          - link "Ver detalles de Nueva Promoción en Torremolinos en Torremolinos" [ref=e80] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e81]:
+        - figure [ref=e82]:
+          - img "Nueva Promoción en Estepona – Estepona"
+        - generic [ref=e83]:
+          - heading "Nueva Promoción en Estepona" [level=3] [ref=e84]
+          - generic [ref=e85]:
+            - generic [ref=e86]: EUR 385.000
+            - generic [ref=e87]: Estepona
+          - paragraph [ref=e88]: "Nueva Promoción: Precios desde €385,000 a €400,000. [Dormitorios: 2] [Baños: 2] [Construidos: 85m2 - 90m2]. Este desarrollo es el nuevo complejo residencial de obra nueva situado …"
+          - link "Ver detalles de Nueva Promoción en Estepona en Estepona" [ref=e89] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e90]:
+        - figure [ref=e91]:
+          - img "Nueva Promoción en Estepona – Estepona"
+        - generic [ref=e92]:
+          - heading "Nueva Promoción en Estepona" [level=3] [ref=e93]
+          - generic [ref=e94]:
+            - generic [ref=e95]: EUR 467.000
+            - generic [ref=e96]: Estepona
+          - paragraph [ref=e97]: "Nueva Promoción: Precios desde €467,000 a €632,000. [Dormitorios: 2 - 3] [Baños: 2] [Construidos: 74m2 - 100m2]. Este es una promoción de 121 viviendas de obra nueva con 1, 2, 3 y…"
+          - link "Ver detalles de Nueva Promoción en Estepona en Estepona" [ref=e98] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e99]:
+        - figure [ref=e100]:
+          - img "Nueva Promoción en Estepona – Estepona"
+        - generic [ref=e101]:
+          - heading "Nueva Promoción en Estepona" [level=3] [ref=e102]
+          - generic [ref=e103]:
+            - generic [ref=e104]: EUR 350.000
+            - generic [ref=e105]: Estepona
+          - paragraph [ref=e106]: "Nueva Promoción: Precios desde €350,000 a €518,000. [Dormitorios: 2 - 4] [Baños: 2] [Construidos: 86m2 - 118m2]. En el municipio Malagueño de Estepona y en pleno corazón de la cos…"
+          - link "Ver detalles de Nueva Promoción en Estepona en Estepona" [ref=e107] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e108]:
+        - figure [ref=e109]:
+          - img "Nueva Promoción en Rincón de la Victoria – Rincón de la Victoria"
+        - generic [ref=e110]:
+          - heading "Nueva Promoción en Rincón de la Victoria" [level=3] [ref=e111]
+          - generic [ref=e112]:
+            - generic [ref=e113]: EUR 410.000
+            - generic [ref=e114]: Rincón de la Victoria
+          - paragraph [ref=e115]: "Nueva Promoción: Precios desde €410,000 a €477,000. [Dormitorios: 2 - 3] [Baños: 2] [Construidos: 85m2 - 94m2]. Este desarrollo, un proyecto inspirado en la tranquilidad y la priv…"
+          - link "Ver detalles de Nueva Promoción en Rincón de la Victoria en Rincón de la Victoria" [ref=e116] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e117]:
+        - figure [ref=e118]:
+          - img "Nueva Promoción en Málaga – Málaga"
+        - generic [ref=e119]:
+          - heading "Nueva Promoción en Málaga" [level=3] [ref=e120]
+          - generic [ref=e121]:
+            - generic [ref=e122]: EUR 393.000
+            - generic [ref=e123]: Málaga
+          - paragraph [ref=e124]: "Nueva Promoción: Precios desde €393,000 a €2,000,000. [Dormitorios: 2 - 4] [Baños: 2] [Construidos: 81m2 - 160m2]. Este emblemático proyect será el protagonista del nuevo enfoque …"
+          - link "Ver detalles de Nueva Promoción en Málaga en Málaga" [ref=e125] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e126]:
+        - figure [ref=e127]:
+          - img "Nueva Promoción en Rincón de la Victoria – Rincón de la Victoria"
+        - generic [ref=e128]:
+          - heading "Nueva Promoción en Rincón de la Victoria" [level=3] [ref=e129]
+          - generic [ref=e130]:
+            - generic [ref=e131]: EUR 685.000
+            - generic [ref=e132]: Rincón de la Victoria
+          - paragraph [ref=e133]: "Nueva Promoción: Precios desde €685,000 a €685,000. [Dormitorios: 3] [Baños: 3] [Construidos: 100m2]. Te presentamos este desarrollo. Un exclusivo residencial de 69 viviendas de 2…"
+          - link "Ver detalles de Nueva Promoción en Rincón de la Victoria en Rincón de la Victoria" [ref=e134] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e135]:
+        - figure [ref=e136]:
+          - img "Nueva Promoción en La Cala Golf – La Cala Golf"
+        - generic [ref=e137]:
+          - heading "Nueva Promoción en La Cala Golf" [level=3] [ref=e138]
+          - generic [ref=e139]:
+            - generic [ref=e140]: EUR 800.000
+            - generic [ref=e141]: La Cala Golf
+          - paragraph [ref=e142]: "Nueva Promoción: Precios desde €800,000 a €1,100,000. [Dormitorios: 2 - 3] [Baños: 2 - 3] [Construidos: 116m2 - 150m2]. Consta de 58 increíbles casas adosadas de 2 y 3 dormitorios…"
+          - link "Ver detalles de Nueva Promoción en La Cala Golf en La Cala Golf" [ref=e143] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e144]:
+        - figure [ref=e145]:
+          - img "Nueva Promoción en Mijas – Mijas"
+        - generic [ref=e146]:
+          - heading "Nueva Promoción en Mijas" [level=3] [ref=e147]
+          - generic [ref=e148]:
+            - generic [ref=e149]: EUR 515.000
+            - generic [ref=e150]: Mijas
+          - paragraph [ref=e151]: "Nueva Promoción: Precios desde €515,000 a €750,000. [Dormitorios: 3 - 4] [Baños: 2 - 4] [Construidos: 178m2 - 246m2]. Sumérgete en un mundo de exclusividad en el encantador pueblo…"
+          - link "Ver detalles de Nueva Promoción en Mijas en Mijas" [ref=e152] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e153]:
+        - figure [ref=e154]:
+          - img "Nueva Promoción en Fuengirola – Fuengirola"
+        - generic [ref=e155]:
+          - heading "Nueva Promoción en Fuengirola" [level=3] [ref=e156]
+          - generic [ref=e157]:
+            - generic [ref=e158]: EUR 340.000
+            - generic [ref=e159]: Fuengirola
+          - paragraph [ref=e160]: "Nueva Promoción: Precios desde €340,000 a €995,000. [Dormitorios: 2 - 3] [Baños: 2] [Construidos: 76m2 - 138m2]. En pleno corazón de Fuengirola, la ciudad de la Costa del Sol cono…"
+          - link "Ver detalles de Nueva Promoción en Fuengirola en Fuengirola" [ref=e161] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e162]:
+        - figure [ref=e163]:
+          - img "Nueva Promoción en Calanova Golf – Calanova Golf"
+        - generic [ref=e164]:
+          - heading "Nueva Promoción en Calanova Golf" [level=3] [ref=e165]
+          - generic [ref=e166]:
+            - generic [ref=e167]: EUR 1.390.000
+            - generic [ref=e168]: Calanova Golf
+          - paragraph [ref=e169]: "Nueva Promoción: Precios desde €1,390,000 a €2,100,000. [Dormitorios: 4] [Baños: 4] [Construidos: 265m2 - 407m2]. La Villa. ¡ÚLTIMAS UNIDADES! Magníficas villas situadas en la Ur…"
+          - link "Ver detalles de Nueva Promoción en Calanova Golf en Calanova Golf" [ref=e170] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+      - article [ref=e171]:
+        - figure [ref=e172]:
+          - img "Nueva Promoción en Benajarafe – Benajarafe"
+        - generic [ref=e173]:
+          - heading "Nueva Promoción en Benajarafe" [level=3] [ref=e174]
+          - generic [ref=e175]:
+            - generic [ref=e176]: EUR 690.000
+            - generic [ref=e177]: Benajarafe
+          - paragraph [ref=e178]: "Nueva Promoción: Precios desde €690,000 a €740,000. [Dormitorios: 3] [Baños: 2] [Construidos: 146m2]. Imagínate despertarte cada mañana con el sonido suave de las olas y la brisa …"
+          - link "Ver detalles de Nueva Promoción en Benajarafe en Benajarafe" [ref=e179] [cursor=pointer]:
+            - /url: "#"
+            - text: Ver detalles
+    - navigation "Paginación de resultados"
+  - paragraph [ref=e186]:
+    - text: LussoMediterraneo.es
+    - text: ·Developer
+    - text: ·Project Management ·Builder
+    - text: Contact us now for a personalized consultation and the first step toward your dream home.
+  - generic [ref=e187]: desktop
+```
