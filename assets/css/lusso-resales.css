@@ -1,118 +1,272 @@
-/* Accesibilidad y UX tweaks */
-.lr-filters label {
-	font-size: 0.98em;
-	color: #555;
-	margin-right: 8px;
-	margin-bottom: 2px;
-	display: block;
-}
-.lr-results-status {
-	font-size: 1em;
-	color: #666;
-	margin-bottom: 16px;
-	font-family: var(--font-secondary, Arial, sans-serif);
-}
-/* TerraCardGrid style */
-.lr-grid { display:grid; gap:32px 24px; grid-template-columns:repeat(3,1fr); }
-@media(max-width: 992px){ .lr-grid { grid-template-columns:repeat(2,1fr); } }
-@media(max-width: 576px){ .lr-grid { grid-template-columns:1fr; } }
+/* ======== PATCH HiHomes-like ======== */
 
-.lr-card {
-	background:#fff;
-	border:1px solid #eee;
-	border-radius:16px;
-	padding:16px;
-	transition:transform .2s, box-shadow .2s;
+/* 0) Grid con aire lateral (gutters) */
+.lr-grid{
+  grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+  gap: 28px 24px !important;
+  padding-inline: 18px;              /* aire a izquierda/derecha */
 }
-.lr-card:hover {
-	transform:translateY(-2px);
-	box-shadow:0 8px 24px rgba(0,0,0,.08);
+@media (min-width: 1024px){
+  .lr-grid{ padding-inline: 24px; }
+}
+@media (max-width: 768px){
+  .lr-grid{ grid-template-columns: 1fr !important; padding-inline: 14px; }
 }
 
-.lr-card__media img {
-	width:100%;
-	height:clamp(200px,26vw,320px);
-	object-fit:cover;
-	border-radius:12px;
-}
-.lr-card__placeholder {
-	height:clamp(200px,26vw,320px);
-	background:#f2f2f2;
-	border-radius:12px;
+/* 1) Tarjeta uniforme */
+.lr-card{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(0,0,0,.06);
 }
 
-.lr-card__title { font-size:clamp(20px,2.1vw,28px); line-height:1.25; margin:.5rem 0; }
-.lr-card__price { font-weight:700; }
-.lr-card__cta {
-	display: inline-block;
-	margin-top: .5rem;
-	padding: 8px 20px;
-	background: #0073aa;
-	color: #fff;
-	font-weight: 600;
-	border-radius: 6px;
-	text-decoration: none;
-	transition: background .2s;
-	border: none;
-	box-shadow: 0 2px 8px rgba(0,0,0,.04);
+/* 2) Media 16:9 – todas iguales */
+.lr-card__media{
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #f3f4f6;
 }
-.lr-card__cta:hover, .lr-card__cta:focus {
-	background: #005a8c;
-	color: #fff;
-	outline: none;
+.lr-card__media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
-/* Barra de filtros arriba del grid */
-.lr-filters {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	margin-bottom: 16px;
-	align-items: center;
-}
-.lr-results-status {
-	margin-bottom: 16px;
-}
-.lr-grid {
-	margin-bottom: 16px;
-}
-}
-.lr-filters select,
-.lr-filters input {
-	min-width: 140px;
-	padding: 6px 8px;
-	border-radius: 4px;
-	border: 1px solid #ccc;
-	font-size: 1em;
-}
-.lr-filters button {
-	padding: 6px 16px;
-	border-radius: 4px;
-	border: none;
-	background: #0073aa;
-	color: #fff;
-	font-weight: 600;
-	cursor: pointer;
-}
-@media (max-width: 768px) {
-	.lr-filters {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 10px;
-	}
-	.lr-filters select,
-	.lr-filters input {
-		min-width: 0;
-		width: 100%;
-	}
 
-.lusso-developments { display:flex; flex-direction:column; gap:20px; }
-.lusso-card { display:flex; flex-direction:row; border:1px solid #ddd; border-radius:8px; overflow:hidden; }
-.lusso-card__image { flex:0 0 280px; max-width:280px; }
-.lusso-card__image img { width:100%; height:100%; object-fit:cover; display:block; }
-.lusso-card__body { padding:16px; display:flex; flex-direction:column; gap:8px; }
-.lusso-card__title { font-weight:600; font-size:1.1rem; margin:0; }
-.lusso-card__price { font-weight:700; }
-@media (max-width:768px){
-	.lusso-card { flex-direction:column; }
-	.lusso-card__image { max-width:100%; }
+/* 3) Barra inferior oscura permanente (como la muestra) */
+.lr-card__bar{
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: #000000CC;             /* negro 80% */
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr auto;   /* título | precio */
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  z-index: 2;
+}
+.lr-card__bar-title{
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lr-card__bar-price{
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 4) Cuerpo: sólo texto secundario/extracto y CTA de fallback (mobile) */
+.lr-card__body{
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 16px 18px 18px;
+  flex: 1 1 auto;
+}
+.lr-card__excerpt{
+  color:#374151;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.1em;
+}
+.lr-card__footer{ margin-top: auto; }
+
+/* 5) Overlay READ MORE (hover) */
+.lr-card__hover{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 18px;
+  background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0) 40%);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+.lr-card:hover .lr-card__hover{
+  opacity: 1;
+  transform: translateY(0);
+}
+.lr-card__cta{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .6rem .95rem;
+  border-radius: .55rem;
+  background: #ff7a00;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  pointer-events: auto;
+}
+
+/* 6) Fix de conflictos previos */
+.lr-card .overlay,
+.lr-card::after{ pointer-events: auto !important; }
+.lr-card a{ position: relative; z-index: 4; }
+/* ======================== LUSSO — Cards & Grid (refactor) ======================== */
+
+/* Vars (puedes ajustar el acento aquí) */
+:root{
+  --lr-gap-x: 24px;
+  --lr-gap-y: 28px;
+  --lr-pad-inline: 18px;
+  --lr-accent: #ff7a00;
+  --lr-shadow: 0 6px 16px rgba(0,0,0,.06);
+  --lr-black-80: #000000CC;
+}
+
+/* -------- GRID: 2 columnas desktop + aire lateral -------- */
+.lr-grid{
+  display: grid !important; /* protege frente a reglas del theme */
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: var(--lr-gap-y) var(--lr-gap-x) !important;
+  padding-inline: var(--lr-pad-inline);
+}
+@media (min-width: 1024px){
+  .lr-grid{ padding-inline: 24px; }
+}
+@media (max-width: 900px){
+  .lr-grid{
+    grid-template-columns: 1fr !important;
+    padding-inline: 14px;
+  }
+}
+/* evita que una card desborde y rompa el grid */
+.lr-grid > .lr-card{ min-width: 0; }
+
+/* -------- CARD base -------- */
+.lr-card{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--lr-shadow);
+}
+
+/* -------- MEDIA 16:9 (todas iguales) -------- */
+.lr-card__media{
+  position: relative;
+  aspect-ratio: 16/9;          /* fallback: usa min-height si necesitas soportar browsers muy viejos */
+  background: #f3f4f6;
+}
+.lr-card__media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  max-width: 100%;
+}
+
+/* -------- BARRA INFERIOR sobre la imagen -------- */
+.lr-card__bar{
+  position: absolute;
+  inset: auto 0 0 0;           /* left/right/bottom */
+  background: var(--lr-black-80);
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  z-index: 2;
+}
+.lr-card__bar-title{
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lr-card__bar-price{
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* -------- BODY (texto + CTA fallback) -------- */
+.lr-card__body{
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 16px 18px 18px;
+  flex: 1 1 auto;              /* iguala alturas entre cards */
+}
+.lr-card__excerpt{
+  color:#374151;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.1em;           /* reserva espacio de 2 líneas */
+}
+.lr-card__footer{ margin-top: auto; }
+
+/* -------- OVERLAY READ MORE (hover) -------- */
+.lr-card__hover{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0) 40%);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+.lr-card:hover .lr-card__hover{
+  opacity: 1;
+  transform: translateY(0);
+}
+.lr-card__cta{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .6rem .95rem;
+  border-radius: .55rem;
+  background: var(--lr-accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  pointer-events: auto;         /* clicable aún con overlay */
+}
+.lr-card__cta:hover{ filter: brightness(.95); }
+
+/* -------- Compat & Conflicts -------- */
+/* Si algún estilo previo anuló eventos en overlays */
+.lr-card .overlay,
+.lr-card::after{ pointer-events: auto !important; }
+/* Asegura stacking correcto de links */
+.lr-card a{ position: relative; z-index: 4; }
+
+/* -------- Accesibilidad / motion -------- */
+@media (prefers-reduced-motion: reduce){
+  .lr-card__hover{ transition: none; }
 }

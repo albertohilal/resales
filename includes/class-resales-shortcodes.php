@@ -40,15 +40,15 @@ class Resales_Shortcodes {
             'p_PageNo'   => (int)$a['page'],
             'p_new_devs' => $a['new_devs'],
         ];
-    if (!empty($a['api_id']))           $args['P_ApiId'] = (int)$a['api_id'];
-    elseif (!empty($a['agency_filter_id'])) $args['P_Agency_FilterId'] = (int)$a['agency_filter_id'];
+        if (!empty($a['api_id']))              $args['P_ApiId'] = (int)$a['api_id'];
+        elseif (!empty($a['agency_filter_id']))$args['P_Agency_FilterId'] = (int)$a['agency_filter_id'];
 
-    // Mapping de filtros a V6
-    if ($a['loc']!=='')      $args['P_Location'] = $a['loc']; // loc → P_Location
-    if ($a['type']!=='')     $args['P_PropertyTypes'] = $a['type']; // type → P_PropertyTypes
-    if ($a['price_max']!=='')$args['P_Max'] = (int)$a['price_max']; // price_max → P_Max
-    if (!empty($a['query_id'])) $args['P_QueryId'] = $a['query_id'];
-    $args['P_SortType'] = $order_v6; // order → P_SortType (numérico)
+        // Mapping de filtros a V6
+        if ($a['loc']!=='')       $args['P_Location']      = $a['loc'];       // loc → P_Location
+        if ($a['type']!=='')      $args['P_PropertyTypes'] = $a['type'];      // type → P_PropertyTypes
+        if ($a['price_max']!=='') $args['P_Max']           = (int)$a['price_max']; // price_max → P_Max
+        if (!empty($a['query_id'])) $args['P_QueryId']     = $a['query_id'];
+        $args['P_SortType'] = $order_v6; // order → P_SortType (numérico)
 
         $res = $client->search($args);
 
@@ -56,9 +56,9 @@ class Resales_Shortcodes {
             return '<div class="resales-error">Error al consultar la API: '.esc_html($res['error']).'</div>';
         }
 
-        $data = $res['data'];
-        $qi   = $data['QueryInfo'] ?? [];
-    $items= $data['Property'] ?? [];
+        $data  = $res['data'];
+        $qi    = $data['QueryInfo'] ?? [];
+        $items = $data['Property'] ?? [];
 
         ob_start();
         // Filtros: barra superior con accesibilidad
@@ -106,45 +106,72 @@ class Resales_Shortcodes {
         </form>
         <?php
         // Región en vivo de resultados y encabezado con foco
-        $totalItems = isset($data['TotalItems']) ? (int)$data['TotalItems'] : count($items);
-        $page = (int)$a['page'];
-        $per = (int)$a['per_page'];
-        $totalPages = $per > 0 ? ceil($totalItems / $per) : 1;
+        $totalItems  = isset($data['TotalItems']) ? (int)$data['TotalItems'] : count($items);
+        $page        = (int)$a['page'];
+        $per         = (int)$a['per_page'];
+        $totalPages  = $per > 0 ? ceil($totalItems / $per) : 1;
         echo '<div class="lr-results-status" role="status" aria-live="polite">'.esc_html($totalItems).' resultados – página '.esc_html($page).' de '.esc_html($totalPages).'</div>';
         echo '<h2 id="results-title" tabindex="-1">Resultados</h2>';
                 echo '<div class="lr-grid">';
                 foreach ($items as $p){
-                        $title = $client->build_title($p);
-                        $img   = !empty($p['first_image_url']) ? $p['first_image_url'] : ($p['MainImage'] ?? '');
-                        $desc  = wp_strip_all_tags($p['Description'] ?? '');
-                        $desc  = mb_substr($desc,0,180).(mb_strlen($desc)>180?'…':'');
-                        $loc   = $p['Location'] ?? ($p['Area'] ?? ($p['Province'] ?? ''));
-                        $price = isset($p['Price']) && $p['Price']>0 ? esc_html(($p['Currency'] ?? '').' '.number_format((float)$p['Price'],0,',','.')) : 'Consultar precio';
-                        $id    = !empty($p['Id']) ? (int)$p['Id'] : 0;
-                        $slug  = sanitize_title($title);
-                        $details_url = $id ? esc_url(home_url("/property/$id/$slug/")) : '';
-                        ?>
-                        <article class="lr-card">
-                            <figure class="lr-card__media">
-                                <?php if ($img): ?>
-                                    <img loading="lazy" decoding="async" src="<?php echo esc_url($img); ?>" alt="<?php echo esc_attr($title . ' – ' . $loc); ?>">
-                                <?php else: ?>
-                                    <div class="lr-card__placeholder" aria-hidden="true"></div>
-                                <?php endif; ?>
-                            </figure>
-                            <div class="lr-card__body">
-                                <h3 class="lr-card__title"><?php echo esc_html($title ?: 'Propiedad'); ?></h3>
-                                <div class="lr-card__meta">
-                                    <span class="lr-card__price"><?php echo $price; ?></span>
-                                    <?php if ($loc): ?><span class="lr-card__loc"><?php echo esc_html($loc); ?></span><?php endif; ?>
-                                </div>
-                                <p class="lr-card__excerpt"><?php echo esc_html($desc); ?></p>
-                                <?php if ($details_url): ?>
-                                <a class="lr-card__cta" data-testid="property-cta" href="<?php echo $details_url; ?>" rel="bookmark" aria-label="Ver detalles de <?php echo esc_attr($title); ?> en <?php echo esc_attr($loc); ?>">Ver detalles</a>
-                                <?php endif; ?>
-                            </div>
-                        </article>
-                        <?php
+                                                $title = $client->build_title($p);
+                                                $img   = !empty($p['first_image_url']) ? $p['first_image_url'] : ($p['MainImage'] ?? '');
+                                                $desc  = wp_strip_all_tags($p['Description'] ?? '');
+                                                $desc  = mb_substr($desc,0,180).(mb_strlen($desc)>180?'…':'');
+                                                $loc   = $p['Location'] ?? ($p['Area'] ?? ($p['Province'] ?? ''));
+                                                $price = isset($p['Price']) && $p['Price']>0 ? (($p['Currency'] ?? '').' '.number_format((float)$p['Price'],0,',','.')) : 'Consultar precio';
+                                                $id    = !empty($p['Id']) ? (int)$p['Id'] : 0;
+                                                $slug  = sanitize_title($title);
+                                                $property_post_id = $p['post_id'] ?? null;
+                                                $property_ref = $p['Ref'] ?? $id;
+                                                $details_url = null;
+                                                if ( ! empty( $property_post_id ) ) {
+                                                        $details_url = get_permalink( $property_post_id );
+                                                }
+                                                if ( empty( $details_url ) && ! empty( $property_ref ) ) {
+                                                        $details_url = add_query_arg(
+                                                                array( 'ref' => rawurlencode( $property_ref ) ),
+                                                                home_url( '/single-property/' )
+                                                        );
+                                                }
+                                                $has_valid_detail = ! empty( $details_url ) && $details_url !== '#';
+                                                ?>
+                                                <article class="lr-card" itemscope itemtype="https://schema.org/Residence" data-testid="property-card">
+                                                    <figure class="lr-card__media">
+                                                        <?php if ($img): ?>
+                                                            <img loading="lazy" decoding="async"
+                                                                     src="<?php echo esc_url($img); ?>"
+                                                                     alt="<?php echo esc_attr($title . ' – ' . $loc); ?>">
+                                                        <?php else: ?>
+                                                            <div class="lr-card__placeholder" aria-hidden="true"></div>
+                                                        <?php endif; ?>
+
+                                                        <div class="lr-card__bar">
+                                                            <h3 class="lr-card__bar-title"><?php echo esc_html($title ?: 'Propiedad'); ?></h3>
+                                                            <span class="lr-card__bar-price"><?php echo $price; ?></span>
+                                                        </div>
+                                                    </figure>
+
+                                                    <?php if ( $has_valid_detail ) : ?>
+                                                        <div class="lr-card__hover" aria-hidden="true">
+                                                            <a class="lr-card__cta" href="<?php echo esc_url($details_url); ?>" rel="bookmark">READ MORE</a>
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <div class="lr-card__body">
+                                                        <div class="lr-card__meta">
+                                                            <span class="lr-card__loc"><?php echo esc_html($loc); ?></span>
+                                                        </div>
+                                                        <p class="lr-card__excerpt"><?php echo esc_html($desc); ?></p>
+
+                                                        <?php if ( $has_valid_detail ) : ?>
+                                                            <div class="lr-card__footer">
+                                                                <a class="lr-card__cta" href="<?php echo esc_url($details_url); ?>" rel="bookmark">Ver detalles</a>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </article>
+                                                <?php
                 }
                 echo '</div>';
 
